@@ -1,22 +1,9 @@
-﻿openapi: 3.0.3
+openapi: 3.0.3
 info:
   title: Clinica Backend API
   version: 1.0.0
 servers:
   - url: http://localhost:3001
-tags:
-  - name: Health
-    description: Health checks
-  - name: Auth
-    description: Authentication and account flows
-  - name: Users
-    description: Administrative users
-  - name: Persons
-    description: Person records
-  - name: Doctors
-    description: Doctors
-  - name: Patients
-    description: Patients
 components:
   securitySchemes:
     bearerAuth:
@@ -24,24 +11,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-      example:
-        message: "Error"
-    ValidationErrorResponse:
-      type: object
-      properties:
-        errors:
-          type: object
-      example:
-        errors:
-          formErrors: []
-          fieldErrors:
-            usr_txt_email:
-              - "Invalid email"
     LoginRequest:
       type: object
       required:
@@ -51,7 +20,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 254
+          maxLength: 50
         usr_txt_password:
           type: string
           minLength: 1
@@ -64,464 +33,292 @@ components:
       properties:
         token:
           type: string
-        refreshToken:
-          type: string
       example:
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        refreshToken: "r1J2V3Z4Y0p1Qk1i..."
-    RefreshTokenRequest:
-      type: object
-      required:
-        - refreshToken
-      properties:
-        refreshToken:
-          type: string
-          minLength: 20
-          maxLength: 500
-      example:
-        refreshToken: "r1J2V3Z4Y0p1Qk1i..."
-    RefreshTokenResponse:
-      type: object
-      properties:
-        token:
-          type: string
-        refreshToken:
-          type: string
-      example:
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        refreshToken: "r1J2V3Z4Y0p1Qk1i..."
-    MessageResponse:
-      type: object
-      properties:
-        message:
-          type: string
-      example:
-        message: "OK"
-    ResendVerificationRequest:
-      type: object
-      required:
-        - usr_txt_email
-      properties:
-        usr_txt_email:
-          type: string
-          format: email
-          maxLength: 50
-      example:
-        usr_txt_email: "juan.perez@correo.com"
-    PersonRequest:
-      type: object
-      required:
-        - per_txt_first_name
-        - per_txt_last_name
-        - per_sta_state
-      properties:
-        per_txt_first_name:
-          type: string
-          maxLength: 100
-        per_txt_last_name:
-          type: string
-          maxLength: 100
-        per_txt_dni:
-          type: string
-          maxLength: 20
-        per_dat_birthdate:
-          type: string
-          format: date
-        per_int_gender:
-          type: integer
-        per_txt_email:
-          type: string
-          format: email
-          maxLength: 254
-        per_txt_phone:
-          type: string
-          maxLength: 30
-        per_txt_address:
-          type: string
-          maxLength: 200
-        per_sta_state:
-          type: integer
-      example:
-        per_txt_first_name: "Juan"
-        per_txt_last_name: "Perez"
-        per_txt_dni: "12345678"
-        per_dat_birthdate: "1990-01-01"
-        per_int_gender: 1
-        per_txt_email: "juan.perez@correo.com"
-        per_txt_phone: "3511234567"
-        per_txt_address: "Calle Falsa 1234"
-        per_sta_state: 1
-    PersonResponse:
-      type: object
-      properties:
-        per_id:
-          type: integer
-        per_txt_first_name:
-          type: string
-        per_txt_last_name:
-          type: string
-        per_txt_dni:
-          type: string
-          nullable: true
-        per_dat_birthdate:
-          type: string
-          format: date
-          nullable: true
-        per_int_gender:
-          type: integer
-          nullable: true
-        per_txt_email:
-          type: string
-          format: email
-          nullable: true
-        per_txt_phone:
-          type: string
-          nullable: true
-        per_txt_address:
-          type: string
-          nullable: true
-        per_sta_state:
-          type: integer
-        per_dat_created_at:
-          type: string
-          format: date-time
-        per_dat_updated_at:
-          type: string
-          format: date-time
-        per_dat_deleted_at:
-          type: string
-          format: date-time
-          nullable: true
-      example:
-        per_id: 1
-        per_txt_first_name: "Juan"
-        per_txt_last_name: "Perez"
-        per_txt_dni: "12345678"
-        per_dat_birthdate: "1990-01-01"
-        per_int_gender: 1
-        per_txt_email: "juan.perez@correo.com"
-        per_txt_phone: "3511234567"
-        per_txt_address: "Calle Falsa 1234"
-        per_sta_state: 1
-        per_dat_created_at: "2026-02-02T03:00:00.000Z"
-        per_dat_updated_at: "2026-02-02T03:00:00.000Z"
-        per_dat_deleted_at: null
-    DoctorRequest:
-      type: object
-      required:
-        - per_id
-        - doc_sta_state
-      properties:
-        per_id:
-          type: integer
-        doc_txt_license:
-          type: string
-          maxLength: 30
-        doc_txt_specialty:
-          type: string
-          maxLength: 100
-        doc_sta_state:
-          type: integer
-      example:
-        per_id: 1
-        doc_txt_license: "MP-12345"
-        doc_txt_specialty: "Clinica"
-        doc_sta_state: 1
-    DoctorResponse:
-      type: object
-      properties:
-        doc_id:
-          type: integer
-        per_id:
-          type: integer
-        doc_txt_license:
-          type: string
-          nullable: true
-        doc_txt_specialty:
-          type: string
-          nullable: true
-        doc_sta_state:
-          type: integer
-        doc_dat_created_at:
-          type: string
-          format: date-time
-        doc_dat_updated_at:
-          type: string
-          format: date-time
-        doc_dat_deleted_at:
-          type: string
-          format: date-time
-          nullable: true
-      example:
-        doc_id: 1
-        per_id: 1
-        doc_txt_license: "MP-12345"
-        doc_txt_specialty: "Clinica"
-        doc_sta_state: 1
-        doc_dat_created_at: "2026-02-02T03:00:00.000Z"
-        doc_dat_updated_at: "2026-02-02T03:00:00.000Z"
-        doc_dat_deleted_at: null
-    PatientRequest:
-      type: object
-      required:
-        - per_id
-        - pat_sta_state
-      properties:
-        per_id:
-          type: integer
-        pat_sta_state:
-          type: integer
-      example:
-        per_id: 1
-        pat_sta_state: 1
-    PatientResponse:
-      type: object
-      properties:
-        pat_id:
-          type: integer
-        per_id:
-          type: integer
-        pat_sta_state:
-          type: integer
-        pat_dat_created_at:
-          type: string
-          format: date-time
-        pat_dat_updated_at:
-          type: string
-          format: date-time
-        pat_dat_deleted_at:
-          type: string
-          format: date-time
-          nullable: true
-      example:
-        pat_id: 1
-        per_id: 1
-        pat_sta_state: 1
-        pat_dat_created_at: "2026-02-02T03:00:00.000Z"
-        pat_dat_updated_at: "2026-02-02T03:00:00.000Z"
-        pat_dat_deleted_at: null
-    VerifyEmailRequest:
-      type: object
-      required:
-        - usr_txt_email
-        - usr_txt_verification_code
-      properties:
-        usr_txt_email:
-          type: string
-          format: email
-          maxLength: 50
-        usr_txt_verification_code:
-          type: string
-          minLength: 6
-          maxLength: 6
-      example:
-        usr_txt_email: "juan.perez@correo.com"
-        usr_txt_verification_code: "123456"
-    RequestPasswordResetRequest:
-      type: object
-      required:
-        - usr_txt_email
-      properties:
-        usr_txt_email:
-          type: string
-          format: email
-          maxLength: 50
-      example:
-        usr_txt_email: "juan.perez@correo.com"
-    ResetPasswordRequest:
-      type: object
-      required:
-        - usr_txt_email
-        - usr_txt_verification_code
-        - usr_txt_password
-      properties:
-        usr_txt_email:
-          type: string
-          format: email
-          maxLength: 50
-        usr_txt_verification_code:
-          type: string
-          minLength: 6
-          maxLength: 6
-        usr_txt_password:
-          type: string
-          minLength: 8
-          maxLength: 100
-          description: "Must include uppercase, lowercase, number, and special character."
-      example:
-        usr_txt_email: "juan.perez@correo.com"
-        usr_txt_verification_code: "123456"
-        usr_txt_password: "New#Password1"
     CreateUserRequest:
       type: object
       required:
+        - loc_idt_id
+        - usr_txt_name
+        - usr_txt_lastname
+        - usr_txt_dni
+        - usr_dat_dateofbirth
+        - usr_int_gender
+        - usr_txt_cuit_cuil
         - usr_txt_email
-        - roles
+        - usr_txt_streetname
+        - usr_txt_streetnumber
+        - usr_txt_postalcode
+        - usr_int_rol
+        - usr_dat_registrationdate
+        - usr_int_registerorigin
         - usr_txt_password
         - usr_sta_state
         - usr_sta_employee_state
-        - per_id
       properties:
+        loc_idt_id:
+          type: integer
+        usr_txt_name:
+          type: string
+          maxLength: 50
+        usr_txt_lastname:
+          type: string
+          maxLength: 50
+        usr_txt_dni:
+          type: string
+          maxLength: 10
+        usr_dat_dateofbirth:
+          type: string
+          format: date
+        usr_int_gender:
+          type: integer
+        usr_txt_celphone:
+          type: string
+          maxLength: 20
+          nullable: true
+        usr_txt_cuit_cuil:
+          type: string
+          maxLength: 11
         usr_txt_email:
           type: string
           format: email
-          maxLength: 254
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-              - "admin"
-              - "recepcionista"
-
-          description: "Lista de roles: admin, recepcionista"
+          maxLength: 50
+        usr_txt_streetname:
+          type: string
+          maxLength: 50
+        usr_txt_streetnumber:
+          type: string
+          maxLength: 4
+        usr_txt_floor:
+          type: string
+          maxLength: 2
+          nullable: true
+        usr_txt_department:
+          type: string
+          maxLength: 4
+          nullable: true
+        usr_txt_postalcode:
+          type: string
+          maxLength: 10
+        usr_int_rol:
+          type: integer
+          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        usr_dat_registrationdate:
+          type: string
+          format: date
+        usr_int_registerorigin:
+          type: integer
+        usr_txt_registeroriginhash:
+          type: string
+          maxLength: 50
+          nullable: true
+        usr_dat_terminationdate:
+          type: string
+          format: date
+          nullable: true
+        usr_int_image:
+          type: integer
+          nullable: true
+        usr_txt_image_ext:
+          type: string
+          maxLength: 100
+          nullable: true
         usr_txt_password:
           type: string
           minLength: 8
           maxLength: 100
           description: "Must include uppercase, lowercase, number, and special character."
-        usr_bol_email_verified:
-          type: boolean
+        usr_txt_token:
+          type: string
+          maxLength: 250
+          nullable: true
         usr_sta_state:
           type: integer
         usr_sta_employee_state:
           type: integer
-        per_id:
-          type: integer
-      example:
-        usr_txt_email: "juan.perez@correo.com"
-        roles:
-          - "admin"
-        usr_txt_password: "Password#123"
-        usr_bol_email_verified: false
-        usr_sta_state: 1
-        usr_sta_employee_state: 1
-        per_id: 1
-    UserResponse:
-      type: object
-      properties:
-        usr_idt_id:
-          type: integer
-        per_id:
-          type: integer
-        usr_txt_email:
+        usr_txt_verification_code:
           type: string
-          format: email
-          maxLength: 254
-        usr_bol_email_verified:
-          type: boolean
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-              - "admin"
-              - "recepcionista"
-
-          description: "Lista de roles: admin, recepcionista"
-        usr_sta_state:
-          type: integer
-        usr_sta_employee_state:
-          type: integer
-        usr_dat_created_at:
-          type: string
-          format: date-time
-        usr_dat_updated_at:
-          type: string
-          format: date-time
+          maxLength: 6
+          nullable: true
         date_deleted_at:
           type: string
           format: date-time
           nullable: true
       example:
-        usr_idt_id: 10
-        per_id: 1
+        loc_idt_id: 1
+        usr_txt_name: "Juan"
+        usr_txt_lastname: "Perez"
+        usr_txt_dni: "12345678"
+        usr_dat_dateofbirth: "1990-01-01"
+        usr_int_gender: 1
+        usr_txt_celphone: "3511234567"
+        usr_txt_cuit_cuil: "20345678901"
         usr_txt_email: "juan.perez@correo.com"
-        usr_bol_email_verified: true
-        roles:
-          - "admin"
+        usr_txt_streetname: "Calle Falsa"
+        usr_txt_streetnumber: "1234"
+        usr_txt_floor: "2"
+        usr_txt_department: "B"
+        usr_txt_postalcode: "5000"
+        usr_int_rol: 1
+        usr_dat_registrationdate: "2025-01-01"
+        usr_int_registerorigin: 1
+        usr_txt_registeroriginhash: "web"
+        usr_dat_terminationdate: null
+        usr_int_image: null
+        usr_txt_image_ext: null
+        usr_txt_password: "Password#123"
+        usr_txt_token: null
         usr_sta_state: 1
         usr_sta_employee_state: 1
-        usr_dat_created_at: "2026-02-02T03:00:00.000Z"
-        usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
+        usr_txt_verification_code: null
         date_deleted_at: null
     UpdateUserRequest:
       type: object
       properties:
+        loc_idt_id:
+          type: integer
+        usr_txt_name:
+          type: string
+          maxLength: 50
+        usr_txt_lastname:
+          type: string
+          maxLength: 50
+        usr_txt_dni:
+          type: string
+          maxLength: 10
+        usr_dat_dateofbirth:
+          type: string
+          format: date
+        usr_int_gender:
+          type: integer
+        usr_txt_celphone:
+          type: string
+          maxLength: 20
+          nullable: true
+        usr_txt_cuit_cuil:
+          type: string
+          maxLength: 11
         usr_txt_email:
           type: string
           format: email
-          maxLength: 254
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-              - "admin"
-              - "recepcionista"
-
-          description: "Lista de roles: admin, recepcionista"
+          maxLength: 50
+        usr_txt_streetname:
+          type: string
+          maxLength: 50
+        usr_txt_streetnumber:
+          type: string
+          maxLength: 4
+        usr_txt_floor:
+          type: string
+          maxLength: 2
+          nullable: true
+        usr_txt_department:
+          type: string
+          maxLength: 4
+          nullable: true
+        usr_txt_postalcode:
+          type: string
+          maxLength: 10
+        usr_int_rol:
+          type: integer
+          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        usr_dat_registrationdate:
+          type: string
+          format: date
+        usr_int_registerorigin:
+          type: integer
+        usr_txt_registeroriginhash:
+          type: string
+          maxLength: 50
+          nullable: true
+        usr_dat_terminationdate:
+          type: string
+          format: date
+          nullable: true
+        usr_int_image:
+          type: integer
+          nullable: true
+        usr_txt_image_ext:
+          type: string
+          maxLength: 100
+          nullable: true
         usr_txt_password:
           type: string
           minLength: 8
           maxLength: 100
           description: "Must include uppercase, lowercase, number, and special character."
-        usr_bol_email_verified:
-          type: boolean
+        usr_txt_token:
+          type: string
+          maxLength: 250
+          nullable: true
         usr_sta_state:
           type: integer
         usr_sta_employee_state:
           type: integer
+        usr_txt_verification_code:
+          type: string
+          maxLength: 6
+          nullable: true
+        date_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
       example:
-        usr_txt_email: "juan.perez@correo.com"
+        usr_txt_name: "Juan Carlos"
         usr_txt_password: "New#Password1"
 paths:
   /health:
     get:
-      tags:
-        - Health
       summary: Health check
       responses:
         "200":
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "ok"
-                  uptime:
-                    type: number
-                  timestamp:
-                    type: string
-                    format: date-time
-                  db:
-                    type: string
-                    example: "up"
-        "503":
-          description: Service Unavailable
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "down"
-                  uptime:
-                    type: number
-                  timestamp:
-                    type: string
-                    format: date-time
-                  db:
-                    type: string
-                    example: "down"
+  /auth/register:
+    post:
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+            example:
+              loc_idt_id: 1
+              usr_txt_name: "Juan"
+              usr_txt_lastname: "Perez"
+              usr_txt_dni: "12345678"
+              usr_dat_dateofbirth: "1990-01-01"
+              usr_int_gender: 1
+              usr_txt_celphone: "3511234567"
+              usr_txt_cuit_cuil: "20345678901"
+              usr_txt_email: "juan.perez@correo.com"
+              usr_txt_streetname: "Calle Falsa"
+              usr_txt_streetnumber: "1234"
+              usr_txt_floor: "2"
+              usr_txt_department: "B"
+              usr_txt_postalcode: "5000"
+              usr_int_rol: 1
+              usr_dat_registrationdate: "2025-01-01"
+              usr_int_registerorigin: 1
+              usr_txt_registeroriginhash: "web"
+              usr_dat_terminationdate: null
+              usr_int_image: null
+              usr_txt_image_ext: null
+              usr_txt_password: "Password#123"
+              usr_txt_token: null
+              usr_sta_state: 1
+              usr_sta_employee_state: 1
+              usr_txt_verification_code: null
+              date_deleted_at: null
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Validation error
+        "409":
+          description: Email or DNI already exists
   /auth/login:
     post:
-      tags:
-        - Auth
       summary: Login
       requestBody:
         required: true
@@ -541,235 +338,11 @@ paths:
                 $ref: "#/components/schemas/LoginResponse"
         "400":
           description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid credentials"
-        "403":
-          description: Account not verified
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Account not verified"
-  /auth/refresh:
-    post:
-      tags:
-        - Auth
-      summary: Refresh access token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RefreshTokenRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RefreshTokenResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "401":
-          description: Invalid refresh token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid refresh token"
-  /auth/logout:
-    post:
-      tags:
-        - Auth
-      summary: Logout (revoke refresh token)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RefreshTokenRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-  /auth/verify-email:
-    post:
-      tags:
-        - Auth
-      summary: Verify email
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/VerifyEmailRequest"
-      responses:
-        "200":
-          description: Email verified
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Invalid or expired code
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid verification code"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "User not found"
-        "429":
-          description: Too many requests
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Too many requests"
-  /auth/resend-verification:
-    post:
-      tags:
-        - Auth
-      summary: Resend verification email
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ResendVerificationRequest"
-      responses:
-        "200":
-          description: If the email exists, a verification code is sent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "429":
-          description: Too many requests
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Too many requests"
-  /auth/request-password-reset:
-    post:
-      tags:
-        - Auth
-      summary: Request password reset
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RequestPasswordResetRequest"
-      responses:
-        "200":
-          description: If the email exists, a reset code is sent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "429":
-          description: Too many requests
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Too many requests"
-  /auth/reset-password:
-    post:
-      tags:
-        - Auth
-      summary: Reset password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ResetPasswordRequest"
-      responses:
-        "200":
-          description: Password updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Invalid or expired code
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid reset code"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "User not found"
-        "429":
-          description: Too many requests
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Too many requests"
   /users:
     post:
-      tags:
-        - Users
-      summary: Create user (admin only)
+      summary: Create user (admin/receptionist)
       security:
         - bearerAuth: []
       requestBody:
@@ -779,60 +352,45 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateUserRequest"
             example:
+              loc_idt_id: 1
+              usr_txt_name: "Juan"
+              usr_txt_lastname: "Perez"
+              usr_txt_dni: "12345678"
+              usr_dat_dateofbirth: "1990-01-01"
+              usr_int_gender: 1
+              usr_txt_celphone: "3511234567"
+              usr_txt_cuit_cuil: "20345678901"
               usr_txt_email: "juan.perez@correo.com"
-              roles:
-                - "admin"
+              usr_txt_streetname: "Calle Falsa"
+              usr_txt_streetnumber: "1234"
+              usr_txt_floor: "2"
+              usr_txt_department: "B"
+              usr_txt_postalcode: "5000"
+              usr_int_rol: 1
+              usr_dat_registrationdate: "2025-01-01"
+              usr_int_registerorigin: 1
+              usr_txt_registeroriginhash: "web"
+              usr_dat_terminationdate: null
+              usr_int_image: null
+              usr_txt_image_ext: null
               usr_txt_password: "Password#123"
-              usr_bol_email_verified: false
+              usr_txt_token: null
               usr_sta_state: 1
               usr_sta_employee_state: 1
-              per_id: 1
+              usr_txt_verification_code: null
+              date_deleted_at: null
       responses:
         "201":
-          description: Created. Sensitive fields (password and verification/reset fields) are omitted in response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-              example:
-                usr_idt_id: 10
-                per_id: 1
-                usr_txt_email: "juan.perez@correo.com"
-                usr_bol_email_verified: false
-                roles:
-                  - "admin"
-                usr_sta_state: 1
-                usr_sta_employee_state: 1
-                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
-                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
-                date_deleted_at: null
+          description: Created
         "400":
           description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
         "403":
           description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
   /users/{id}:
     get:
-      tags:
-        - Users
-      summary: Get user by id (admin/receptionist)
+      summary: Get user by id (admin/receptionist/doctor or self)
       security:
         - bearerAuth: []
       parameters:
@@ -843,60 +401,17 @@ paths:
             type: integer
       responses:
         "200":
-          description: OK. Sensitive fields (password and verification/reset fields) are omitted in response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-              example:
-                usr_idt_id: 10
-                per_id: 1
-                usr_txt_email: "juan.perez@correo.com"
-                usr_bol_email_verified: true
-                roles:
-                  - "admin"
-                usr_sta_state: 1
-                usr_sta_employee_state: 1
-                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
-                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
-                date_deleted_at: null
+          description: OK
         "400":
           description: Invalid id
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid id"
         "401":
           description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
         "403":
           description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
         "404":
           description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "User not found"
     put:
-      tags:
-        - Users
       summary: Update user (admin/receptionist)
-      description: "Recepcionista no puede editar usuarios admin ni otros recepcionistas, ni cambiar roles."
       security:
         - bearerAuth: []
       parameters:
@@ -912,62 +427,20 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateUserRequest"
             example:
-              usr_txt_email: "juan.perez@correo.com"
+              usr_txt_name: "Juan Carlos"
               usr_txt_password: "New#Password1"
       responses:
         "200":
-          description: OK. Sensitive fields (password and verification/reset fields) are omitted in response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-              example:
-                usr_idt_id: 10
-                per_id: 1
-                usr_txt_email: "juan.perez@correo.com"
-                usr_bol_email_verified: true
-                roles:
-                  - "admin"
-                usr_sta_state: 1
-                usr_sta_employee_state: 1
-                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
-                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
-                date_deleted_at: null
+          description: OK
         "400":
           description: Invalid id
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid id"
         "401":
           description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
         "403":
           description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
         "404":
           description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "User not found"
     delete:
-      tags:
-        - Users
       summary: Soft delete user (admin)
       security:
         - bearerAuth: []
@@ -982,269 +455,7 @@ paths:
           description: No Content
         "400":
           description: Invalid id
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid id"
         "401":
           description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
         "403":
           description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
-  /:
-    get:
-      tags:
-        - Health
-      summary: Root health
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "ok"
-  /persons:
-    post:
-      tags:
-        - Persons
-      summary: Create person (admin/receptionist)
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PersonRequest"
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PersonResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
-  /users/me:
-    get:
-      tags:
-        - Users
-      summary: Get current user (admin/receptionist)
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
-  /persons/{id}:
-    get:
-      tags:
-        - Persons
-      summary: Get person by id (admin/receptionist)
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PersonResponse"
-        "400":
-          description: Invalid id
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Invalid id"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Person not found"
-  /doctors:
-    post:
-      tags:
-        - Doctors
-      summary: Create doctor (admin/receptionist)
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DoctorRequest"
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DoctorResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
-        "409":
-          description: Doctor already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Doctor already exists"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /patients:
-    post:
-      tags:
-        - Patients
-      summary: Create patient (admin/receptionist)
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PatientRequest"
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PatientResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Unauthorized"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Forbidden"
-        "409":
-          description: Patient already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Patient already exists"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
