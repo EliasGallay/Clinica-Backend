@@ -66,6 +66,14 @@ describe("GET /users/:id", () => {
 
     expect(res.status).toBe(403);
   });
+
+  it("returns 404 when user does not exist", async () => {
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(null as any);
+
+    const res = await request(app).get("/users/99").set("Authorization", "Bearer admin");
+
+    expect(res.status).toBe(404);
+  });
 });
 
 describe("PUT /users/:id", () => {
@@ -89,6 +97,26 @@ describe("PUT /users/:id", () => {
 
     expect(res.status).toBe(403);
   });
+
+  it("returns 400 for invalid body", async () => {
+    const res = await request(app)
+      .put("/users/10")
+      .set("Authorization", "Bearer admin")
+      .send({ usr_txt_password: "weak" });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 404 when user does not exist", async () => {
+    vi.spyOn(UsersModel, "update").mockResolvedValue([0] as any);
+
+    const res = await request(app)
+      .put("/users/10")
+      .set("Authorization", "Bearer admin")
+      .send({ usr_txt_name: "Juan Carlos" });
+
+    expect(res.status).toBe(404);
+  });
 });
 
 describe("DELETE /users/:id", () => {
@@ -102,6 +130,65 @@ describe("DELETE /users/:id", () => {
 
   it("forbids receptionist from deleting", async () => {
     const res = await request(app).delete("/users/10").set("Authorization", "Bearer receptionist");
+
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 400 for invalid id", async () => {
+    const res = await request(app).delete("/users/abc").set("Authorization", "Bearer admin");
+
+    expect(res.status).toBe(400);
+  });
+});
+
+describe("POST /users", () => {
+  const validBody = {
+    loc_idt_id: 1,
+    usr_txt_name: "Juan",
+    usr_txt_lastname: "Perez",
+    usr_txt_dni: "12345678",
+    usr_dat_dateofbirth: "1990-01-01",
+    usr_int_gender: 1,
+    usr_txt_celphone: "3511234567",
+    usr_txt_cuit_cuil: "20345678901",
+    usr_txt_email: "juan.perez@correo.com",
+    usr_txt_streetname: "Calle Falsa",
+    usr_txt_streetnumber: "1234",
+    usr_txt_floor: "2",
+    usr_txt_department: "B",
+    usr_txt_postalcode: "5000",
+    usr_int_rol: 1,
+    usr_dat_registrationdate: "2025-01-01",
+    usr_int_registerorigin: 1,
+    usr_txt_registeroriginhash: "web",
+    usr_dat_terminationdate: null,
+    usr_int_image: null,
+    usr_txt_image_ext: null,
+    usr_txt_password: "Password#123",
+    usr_txt_token: null,
+    usr_sta_state: 1,
+    usr_sta_employee_state: 1,
+    usr_txt_verification_code: null,
+    date_deleted_at: null,
+  };
+
+  it("allows admin to create", async () => {
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(null as any);
+    vi.spyOn(UsersModel, "create").mockResolvedValue(baseUserModel(10) as any);
+
+    const res = await request(app)
+      .post("/users")
+      .set("Authorization", "Bearer admin")
+      .send(validBody);
+
+    expect(res.status).toBe(201);
+  });
+
+  it("forbids doctor to create", async () => {
+    const res = await request(app)
+      .post("/users")
+      .set("Authorization", "Bearer doctor")
+      .send(validBody);
 
     expect(res.status).toBe(403);
   });
