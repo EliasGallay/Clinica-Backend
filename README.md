@@ -7,6 +7,14 @@ Backend en Node.js + TypeScript con Express, Sequelize y Postgres.
 - Node.js 20+
 - Postgres (local o Docker)
 
+## Stack tecnico
+
+- Runtime: Node.js + TypeScript
+- Web: Express
+- ORM: Sequelize + pg
+- Tests: Vitest + Supertest
+- Calidad: ESLint + Prettier + Husky
+
 ## Configuracion
 
 1. Copia `.env.example` a `.env`.
