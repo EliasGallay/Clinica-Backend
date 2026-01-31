@@ -1,0 +1,461 @@
+openapi: 3.0.3
+info:
+  title: Clinica Backend API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3001
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - usr_txt_email
+        - usr_txt_password
+      properties:
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+        usr_txt_password:
+          type: string
+          minLength: 1
+          maxLength: 100
+      example:
+        usr_txt_email: "juan.perez@correo.com"
+        usr_txt_password: "Password#123"
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+      example:
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    CreateUserRequest:
+      type: object
+      required:
+        - loc_idt_id
+        - usr_txt_name
+        - usr_txt_lastname
+        - usr_txt_dni
+        - usr_dat_dateofbirth
+        - usr_int_gender
+        - usr_txt_cuit_cuil
+        - usr_txt_email
+        - usr_txt_streetname
+        - usr_txt_streetnumber
+        - usr_txt_postalcode
+        - usr_int_rol
+        - usr_dat_registrationdate
+        - usr_int_registerorigin
+        - usr_txt_password
+        - usr_sta_state
+        - usr_sta_employee_state
+      properties:
+        loc_idt_id:
+          type: integer
+        usr_txt_name:
+          type: string
+          maxLength: 50
+        usr_txt_lastname:
+          type: string
+          maxLength: 50
+        usr_txt_dni:
+          type: string
+          maxLength: 10
+        usr_dat_dateofbirth:
+          type: string
+          format: date
+        usr_int_gender:
+          type: integer
+        usr_txt_celphone:
+          type: string
+          maxLength: 20
+          nullable: true
+        usr_txt_cuit_cuil:
+          type: string
+          maxLength: 11
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+        usr_txt_streetname:
+          type: string
+          maxLength: 50
+        usr_txt_streetnumber:
+          type: string
+          maxLength: 4
+        usr_txt_floor:
+          type: string
+          maxLength: 2
+          nullable: true
+        usr_txt_department:
+          type: string
+          maxLength: 4
+          nullable: true
+        usr_txt_postalcode:
+          type: string
+          maxLength: 10
+        usr_int_rol:
+          type: integer
+          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        usr_dat_registrationdate:
+          type: string
+          format: date
+        usr_int_registerorigin:
+          type: integer
+        usr_txt_registeroriginhash:
+          type: string
+          maxLength: 50
+          nullable: true
+        usr_dat_terminationdate:
+          type: string
+          format: date
+          nullable: true
+        usr_int_image:
+          type: integer
+          nullable: true
+        usr_txt_image_ext:
+          type: string
+          maxLength: 100
+          nullable: true
+        usr_txt_password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: "Must include uppercase, lowercase, number, and special character."
+        usr_txt_token:
+          type: string
+          maxLength: 250
+          nullable: true
+        usr_sta_state:
+          type: integer
+        usr_sta_employee_state:
+          type: integer
+        usr_txt_verification_code:
+          type: string
+          maxLength: 6
+          nullable: true
+        date_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        loc_idt_id: 1
+        usr_txt_name: "Juan"
+        usr_txt_lastname: "Perez"
+        usr_txt_dni: "12345678"
+        usr_dat_dateofbirth: "1990-01-01"
+        usr_int_gender: 1
+        usr_txt_celphone: "3511234567"
+        usr_txt_cuit_cuil: "20345678901"
+        usr_txt_email: "juan.perez@correo.com"
+        usr_txt_streetname: "Calle Falsa"
+        usr_txt_streetnumber: "1234"
+        usr_txt_floor: "2"
+        usr_txt_department: "B"
+        usr_txt_postalcode: "5000"
+        usr_int_rol: 1
+        usr_dat_registrationdate: "2025-01-01"
+        usr_int_registerorigin: 1
+        usr_txt_registeroriginhash: "web"
+        usr_dat_terminationdate: null
+        usr_int_image: null
+        usr_txt_image_ext: null
+        usr_txt_password: "Password#123"
+        usr_txt_token: null
+        usr_sta_state: 1
+        usr_sta_employee_state: 1
+        usr_txt_verification_code: null
+        date_deleted_at: null
+    UpdateUserRequest:
+      type: object
+      properties:
+        loc_idt_id:
+          type: integer
+        usr_txt_name:
+          type: string
+          maxLength: 50
+        usr_txt_lastname:
+          type: string
+          maxLength: 50
+        usr_txt_dni:
+          type: string
+          maxLength: 10
+        usr_dat_dateofbirth:
+          type: string
+          format: date
+        usr_int_gender:
+          type: integer
+        usr_txt_celphone:
+          type: string
+          maxLength: 20
+          nullable: true
+        usr_txt_cuit_cuil:
+          type: string
+          maxLength: 11
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+        usr_txt_streetname:
+          type: string
+          maxLength: 50
+        usr_txt_streetnumber:
+          type: string
+          maxLength: 4
+        usr_txt_floor:
+          type: string
+          maxLength: 2
+          nullable: true
+        usr_txt_department:
+          type: string
+          maxLength: 4
+          nullable: true
+        usr_txt_postalcode:
+          type: string
+          maxLength: 10
+        usr_int_rol:
+          type: integer
+          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        usr_dat_registrationdate:
+          type: string
+          format: date
+        usr_int_registerorigin:
+          type: integer
+        usr_txt_registeroriginhash:
+          type: string
+          maxLength: 50
+          nullable: true
+        usr_dat_terminationdate:
+          type: string
+          format: date
+          nullable: true
+        usr_int_image:
+          type: integer
+          nullable: true
+        usr_txt_image_ext:
+          type: string
+          maxLength: 100
+          nullable: true
+        usr_txt_password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: "Must include uppercase, lowercase, number, and special character."
+        usr_txt_token:
+          type: string
+          maxLength: 250
+          nullable: true
+        usr_sta_state:
+          type: integer
+        usr_sta_employee_state:
+          type: integer
+        usr_txt_verification_code:
+          type: string
+          maxLength: 6
+          nullable: true
+        date_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        usr_txt_name: "Juan Carlos"
+        usr_txt_password: "New#Password1"
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /auth/register:
+    post:
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+            example:
+              loc_idt_id: 1
+              usr_txt_name: "Juan"
+              usr_txt_lastname: "Perez"
+              usr_txt_dni: "12345678"
+              usr_dat_dateofbirth: "1990-01-01"
+              usr_int_gender: 1
+              usr_txt_celphone: "3511234567"
+              usr_txt_cuit_cuil: "20345678901"
+              usr_txt_email: "juan.perez@correo.com"
+              usr_txt_streetname: "Calle Falsa"
+              usr_txt_streetnumber: "1234"
+              usr_txt_floor: "2"
+              usr_txt_department: "B"
+              usr_txt_postalcode: "5000"
+              usr_int_rol: 1
+              usr_dat_registrationdate: "2025-01-01"
+              usr_int_registerorigin: 1
+              usr_txt_registeroriginhash: "web"
+              usr_dat_terminationdate: null
+              usr_int_image: null
+              usr_txt_image_ext: null
+              usr_txt_password: "Password#123"
+              usr_txt_token: null
+              usr_sta_state: 1
+              usr_sta_employee_state: 1
+              usr_txt_verification_code: null
+              date_deleted_at: null
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Validation error
+        "409":
+          description: Email or DNI already exists
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              usr_txt_email: "juan.perez@correo.com"
+              usr_txt_password: "Password#123"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Validation error
+        "401":
+          description: Invalid credentials
+  /users:
+    post:
+      summary: Create user (admin/receptionist)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+            example:
+              loc_idt_id: 1
+              usr_txt_name: "Juan"
+              usr_txt_lastname: "Perez"
+              usr_txt_dni: "12345678"
+              usr_dat_dateofbirth: "1990-01-01"
+              usr_int_gender: 1
+              usr_txt_celphone: "3511234567"
+              usr_txt_cuit_cuil: "20345678901"
+              usr_txt_email: "juan.perez@correo.com"
+              usr_txt_streetname: "Calle Falsa"
+              usr_txt_streetnumber: "1234"
+              usr_txt_floor: "2"
+              usr_txt_department: "B"
+              usr_txt_postalcode: "5000"
+              usr_int_rol: 1
+              usr_dat_registrationdate: "2025-01-01"
+              usr_int_registerorigin: 1
+              usr_txt_registeroriginhash: "web"
+              usr_dat_terminationdate: null
+              usr_int_image: null
+              usr_txt_image_ext: null
+              usr_txt_password: "Password#123"
+              usr_txt_token: null
+              usr_sta_state: 1
+              usr_sta_employee_state: 1
+              usr_txt_verification_code: null
+              date_deleted_at: null
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+  /users/{id}:
+    get:
+      summary: Get user by id (admin/receptionist/doctor or self)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid id
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+    put:
+      summary: Update user (admin/receptionist)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+            example:
+              usr_txt_name: "Juan Carlos"
+              usr_txt_password: "New#Password1"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid id
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+    delete:
+      summary: Soft delete user (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid id
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
