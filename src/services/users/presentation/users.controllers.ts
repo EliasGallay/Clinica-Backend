@@ -1,0 +1,77 @@
+import type { Request, Response } from "express";
+import { UserPostgresDatasourceImpl } from "../infrastructure/users.datasource.impl";
+import { UserRepositoryImpl } from "../infrastructure/users.repository.impl";
+import {
+  CreateUserUseCase,
+  DeleteUserUseCase,
+  GetUserByIdUseCase,
+  UpdateUserUseCase,
+} from "../domain/use-cases";
+
+const datasource = new UserPostgresDatasourceImpl();
+const repository = new UserRepositoryImpl(datasource);
+const createUserUseCase = new CreateUserUseCase(repository);
+const getUserByIdUseCase = new GetUserByIdUseCase(repository);
+const updateUserUseCase = new UpdateUserUseCase(repository);
+const deleteUserUseCase = new DeleteUserUseCase(repository);
+
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    const user = await createUserUseCase.execute(req.body);
+    return res.status(201).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
+
+    const user = await getUserByIdUseCase.execute(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
+
+    const user = await updateUserUseCase.execute(id, req.body);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
+
+    await deleteUserUseCase.execute(id);
+    return res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
