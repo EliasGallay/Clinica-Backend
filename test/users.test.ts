@@ -6,12 +6,10 @@ import type { UsersModelInstance } from "../src/services/users/infrastructure/da
 
 vi.mock("../src/config/adapters/jwt.adapter", () => ({
   verifyToken: (token: string) => {
-    if (token === "admin")
-      return { usr_idt_id: 1, usr_txt_email: "a@a.com", roles: ["admin"] };
+    if (token === "admin") return { usr_idt_id: 1, usr_txt_email: "a@a.com", roles: ["admin"] };
     if (token === "receptionist")
       return { usr_idt_id: 2, usr_txt_email: "r@r.com", roles: ["recepcionista"] };
-    if (token === "doctor")
-      return { usr_idt_id: 3, usr_txt_email: "d@d.com", roles: ["medico"] };
+    if (token === "doctor") return { usr_idt_id: 3, usr_txt_email: "d@d.com", roles: ["medico"] };
     if (token === "patient-1")
       return { usr_idt_id: 10, usr_txt_email: "p1@p.com", roles: ["paciente"] };
     if (token === "patient-2")
@@ -84,9 +82,7 @@ describe("PUT /users/:id", () => {
   it("allows receptionist to update", async () => {
     vi.spyOn(UsersModel, "update").mockResolvedValue([1] as any);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(10) as any);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as any),
-    );
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) => callback({} as any));
 
     const res = await request(app)
       .put("/users/10")
@@ -117,9 +113,7 @@ describe("PUT /users/:id", () => {
   it("returns 404 when user does not exist", async () => {
     vi.spyOn(UsersModel, "update").mockResolvedValue([0] as any);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(null as any);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as any),
-    );
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) => callback({} as any));
 
     const res = await request(app)
       .put("/users/10")
@@ -190,9 +184,7 @@ describe("POST /users", () => {
     vi.spyOn(RolesModel, "findAll").mockResolvedValue([
       { id: "role-id", rol_name: "admin" },
     ] as any);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as any),
-    );
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) => callback({} as any));
 
     const res = await request(app)
       .post("/users")

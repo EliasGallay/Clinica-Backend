@@ -11,4 +11,3 @@ export const signToken = (payload: JwtPayload): string =>
   jwt.sign(payload, JWT_SEED, { expiresIn: JWT_EXPIRE as jwt.SignOptions["expiresIn"] });
 
 export const verifyToken = (token: string): JwtPayload => jwt.verify(token, JWT_SEED) as JwtPayload;
-

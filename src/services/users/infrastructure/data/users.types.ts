@@ -26,5 +26,3 @@ export type UsersCreationAttributes = Omit<
 >;
 
 export type UsersModelInstance = Model<UsersAttributes, UsersCreationAttributes> & UsersAttributes;
-
-

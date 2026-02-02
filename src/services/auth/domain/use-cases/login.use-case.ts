@@ -30,4 +30,3 @@ export class LoginUseCase {
     return { token };
   }
 }
-

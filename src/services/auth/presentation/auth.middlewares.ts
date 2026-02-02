@@ -53,4 +53,3 @@ export const requireSelfOrRoles =
     }
     return res.status(403).json({ message: "Forbidden" });
   };
-

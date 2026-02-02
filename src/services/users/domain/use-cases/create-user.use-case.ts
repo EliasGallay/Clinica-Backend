@@ -40,4 +40,3 @@ export class CreateUserUseCase {
     return this.repository.create(entity);
   }
 }
-

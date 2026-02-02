@@ -22,4 +22,3 @@ export const toUserEntity = (model: UsersModelInstance, roles: string[]): UserEn
     model.usr_dat_updated_at,
     model.date_deleted_at,
   );
-

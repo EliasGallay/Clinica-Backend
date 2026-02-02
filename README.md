@@ -70,4 +70,3 @@ Husky ejecuta:
 
 1. `npm run fix`
 2. `npm test`
-

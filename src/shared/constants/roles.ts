@@ -4,4 +4,3 @@
   DOCTOR = "medico",
   PATIENT = "paciente",
 }
-

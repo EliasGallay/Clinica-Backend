@@ -18,4 +18,3 @@ export const createUserDtoSchema = z.object({
 });
 
 export type CreateUserDto = z.infer<typeof createUserDtoSchema>;
-

@@ -151,4 +151,3 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
     await UsersModel.update({ date_deleted_at: new Date() }, { where: { usr_idt_id: id } });
   }
 }
-

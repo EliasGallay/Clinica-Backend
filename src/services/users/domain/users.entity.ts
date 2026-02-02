@@ -20,4 +20,3 @@
     public date_deleted_at: Date | null,
   ) {}
 }
-
