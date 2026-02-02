@@ -1,4 +1,4 @@
-﻿# Clinica Backend
+# Clinica Backend
 
 Backend en Node.js + TypeScript con Express, Sequelize y Postgres.
 
@@ -26,7 +26,6 @@ Variables principales:
 - `PORT`
 - `JWT_SEED`
 - `JWT_EXPIRE`
-- `REFRESH_TOKEN_EXPIRE`
 - `DB_NAME`
 - `DB_USER`
 - `DB_PASSWORD`
@@ -37,7 +36,6 @@ Variables principales:
 - `SMTP_USER`
 - `SMTP_PASS`
 - `MAIL_FROM`
-- `EMAIL_SEND_ENABLED` (true/false, si es false loguea los codigos en consola)
 
 ## Scripts
 
@@ -56,19 +54,6 @@ Respuestas:
 
 - `200` cuando la app y la DB estan OK (`db: "up"`)
 - `503` cuando la DB no responde (`db: "down"`)
-
-## API docs
-
-Swagger UI: `GET /api-docs`
-
-Ejemplos:
-
-- Local: `http://localhost:3001/api-docs`
-- Produccion: `https://api.tu-dominio.com/api-docs`
-
-## API docs
-
-Swagger UI: `GET /api-docs`
 
 ## Estructura (DDD)
 

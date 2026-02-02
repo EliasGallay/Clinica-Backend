@@ -35,236 +35,178 @@ components:
           type: string
       example:
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: "OK"
+    VerifyEmailRequest:
+      type: object
+      required:
+        - usr_txt_email
+        - usr_txt_verification_code
+      properties:
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+        usr_txt_verification_code:
+          type: string
+          minLength: 6
+          maxLength: 6
+      example:
+        usr_txt_email: "juan.perez@correo.com"
+        usr_txt_verification_code: "123456"
+    RequestPasswordResetRequest:
+      type: object
+      required:
+        - usr_txt_email
+      properties:
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+      example:
+        usr_txt_email: "juan.perez@correo.com"
+    ResetPasswordRequest:
+      type: object
+      required:
+        - usr_txt_email
+        - usr_txt_verification_code
+        - usr_txt_password
+      properties:
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+        usr_txt_verification_code:
+          type: string
+          minLength: 6
+          maxLength: 6
+        usr_txt_password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: "Must include uppercase, lowercase, number, and special character."
+      example:
+        usr_txt_email: "juan.perez@correo.com"
+        usr_txt_verification_code: "123456"
+        usr_txt_password: "New#Password1"
+    RegisterRequest:
+      type: object
+      required:
+        - usr_txt_email
+        - usr_txt_password
+      properties:
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 254
+        usr_txt_password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          description: "Must include uppercase, lowercase, number, and special character."
+      example:
+        usr_txt_email: "juan.perez@correo.com"
+        usr_txt_password: "Password#123"
     CreateUserRequest:
       type: object
       required:
-        - loc_idt_id
-        - usr_txt_name
-        - usr_txt_lastname
-        - usr_txt_dni
-        - usr_dat_dateofbirth
-        - usr_int_gender
-        - usr_txt_cuit_cuil
         - usr_txt_email
-        - usr_txt_streetname
-        - usr_txt_streetnumber
-        - usr_txt_postalcode
         - usr_int_rol
-        - usr_dat_registrationdate
-        - usr_int_registerorigin
         - usr_txt_password
         - usr_sta_state
         - usr_sta_employee_state
       properties:
-        loc_idt_id:
-          type: integer
-        usr_txt_name:
-          type: string
-          maxLength: 50
-        usr_txt_lastname:
-          type: string
-          maxLength: 50
-        usr_txt_dni:
-          type: string
-          maxLength: 10
-        usr_dat_dateofbirth:
-          type: string
-          format: date
-        usr_int_gender:
-          type: integer
-        usr_txt_celphone:
-          type: string
-          maxLength: 20
-          nullable: true
-        usr_txt_cuit_cuil:
-          type: string
-          maxLength: 11
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
-        usr_txt_streetname:
-          type: string
-          maxLength: 50
-        usr_txt_streetnumber:
-          type: string
-          maxLength: 4
-        usr_txt_floor:
-          type: string
-          maxLength: 2
-          nullable: true
-        usr_txt_department:
-          type: string
-          maxLength: 4
-          nullable: true
-        usr_txt_postalcode:
-          type: string
-          maxLength: 10
+          maxLength: 254
         usr_int_rol:
           type: integer
           description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
-        usr_dat_registrationdate:
-          type: string
-          format: date
-        usr_int_registerorigin:
-          type: integer
-        usr_txt_registeroriginhash:
-          type: string
-          maxLength: 50
-          nullable: true
-        usr_dat_terminationdate:
-          type: string
-          format: date
-          nullable: true
-        usr_int_image:
-          type: integer
-          nullable: true
-        usr_txt_image_ext:
-          type: string
-          maxLength: 100
-          nullable: true
         usr_txt_password:
           type: string
           minLength: 8
           maxLength: 100
           description: "Must include uppercase, lowercase, number, and special character."
-        usr_txt_token:
-          type: string
-          maxLength: 250
-          nullable: true
+        usr_bol_email_verified:
+          type: boolean
         usr_sta_state:
           type: integer
         usr_sta_employee_state:
           type: integer
-        usr_txt_verification_code:
+      example:
+        usr_txt_email: "juan.perez@correo.com"
+        usr_int_rol: 1
+        usr_txt_password: "Password#123"
+        usr_bol_email_verified: false
+        usr_sta_state: 1
+        usr_sta_employee_state: 1
+    UserResponse:
+      type: object
+      properties:
+        usr_idt_id:
+          type: integer
+        usr_txt_email:
           type: string
-          maxLength: 6
-          nullable: true
+          format: email
+          maxLength: 254
+        usr_bol_email_verified:
+          type: boolean
+        usr_int_rol:
+          type: integer
+          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        usr_sta_state:
+          type: integer
+        usr_sta_employee_state:
+          type: integer
+        usr_dat_created_at:
+          type: string
+          format: date-time
+        usr_dat_updated_at:
+          type: string
+          format: date-time
         date_deleted_at:
           type: string
           format: date-time
           nullable: true
       example:
-        loc_idt_id: 1
-        usr_txt_name: "Juan"
-        usr_txt_lastname: "Perez"
-        usr_txt_dni: "12345678"
-        usr_dat_dateofbirth: "1990-01-01"
-        usr_int_gender: 1
-        usr_txt_celphone: "3511234567"
-        usr_txt_cuit_cuil: "20345678901"
+        usr_idt_id: 10
         usr_txt_email: "juan.perez@correo.com"
-        usr_txt_streetname: "Calle Falsa"
-        usr_txt_streetnumber: "1234"
-        usr_txt_floor: "2"
-        usr_txt_department: "B"
-        usr_txt_postalcode: "5000"
-        usr_int_rol: 1
-        usr_dat_registrationdate: "2025-01-01"
-        usr_int_registerorigin: 1
-        usr_txt_registeroriginhash: "web"
-        usr_dat_terminationdate: null
-        usr_int_image: null
-        usr_txt_image_ext: null
-        usr_txt_password: "Password#123"
-        usr_txt_token: null
+        usr_bol_email_verified: true
+        usr_int_rol: 4
         usr_sta_state: 1
         usr_sta_employee_state: 1
-        usr_txt_verification_code: null
+        usr_dat_created_at: "2026-02-02T03:00:00.000Z"
+        usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
         date_deleted_at: null
     UpdateUserRequest:
       type: object
       properties:
-        loc_idt_id:
-          type: integer
-        usr_txt_name:
-          type: string
-          maxLength: 50
-        usr_txt_lastname:
-          type: string
-          maxLength: 50
-        usr_txt_dni:
-          type: string
-          maxLength: 10
-        usr_dat_dateofbirth:
-          type: string
-          format: date
-        usr_int_gender:
-          type: integer
-        usr_txt_celphone:
-          type: string
-          maxLength: 20
-          nullable: true
-        usr_txt_cuit_cuil:
-          type: string
-          maxLength: 11
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
-        usr_txt_streetname:
-          type: string
-          maxLength: 50
-        usr_txt_streetnumber:
-          type: string
-          maxLength: 4
-        usr_txt_floor:
-          type: string
-          maxLength: 2
-          nullable: true
-        usr_txt_department:
-          type: string
-          maxLength: 4
-          nullable: true
-        usr_txt_postalcode:
-          type: string
-          maxLength: 10
+          maxLength: 254
         usr_int_rol:
           type: integer
           description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
-        usr_dat_registrationdate:
-          type: string
-          format: date
-        usr_int_registerorigin:
-          type: integer
-        usr_txt_registeroriginhash:
-          type: string
-          maxLength: 50
-          nullable: true
-        usr_dat_terminationdate:
-          type: string
-          format: date
-          nullable: true
-        usr_int_image:
-          type: integer
-          nullable: true
-        usr_txt_image_ext:
-          type: string
-          maxLength: 100
-          nullable: true
         usr_txt_password:
           type: string
           minLength: 8
           maxLength: 100
           description: "Must include uppercase, lowercase, number, and special character."
-        usr_txt_token:
-          type: string
-          maxLength: 250
-          nullable: true
+        usr_bol_email_verified:
+          type: boolean
         usr_sta_state:
           type: integer
         usr_sta_employee_state:
           type: integer
-        usr_txt_verification_code:
-          type: string
-          maxLength: 6
-          nullable: true
-        date_deleted_at:
-          type: string
-          format: date-time
-          nullable: true
       example:
-        usr_txt_name: "Juan Carlos"
+        usr_txt_email: "juan.perez@correo.com"
         usr_txt_password: "New#Password1"
 paths:
   /health:
@@ -281,38 +223,43 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateUserRequest"
+              $ref: "#/components/schemas/RegisterRequest"
             example:
-              loc_idt_id: 1
-              usr_txt_name: "Juan"
-              usr_txt_lastname: "Perez"
-              usr_txt_dni: "12345678"
-              usr_dat_dateofbirth: "1990-01-01"
-              usr_int_gender: 1
-              usr_txt_celphone: "3511234567"
-              usr_txt_cuit_cuil: "20345678901"
               usr_txt_email: "juan.perez@correo.com"
-              usr_txt_streetname: "Calle Falsa"
-              usr_txt_streetnumber: "1234"
-              usr_txt_floor: "2"
-              usr_txt_department: "B"
-              usr_txt_postalcode: "5000"
-              usr_int_rol: 1
-              usr_dat_registrationdate: "2025-01-01"
-              usr_int_registerorigin: 1
-              usr_txt_registeroriginhash: "web"
-              usr_dat_terminationdate: null
-              usr_int_image: null
-              usr_txt_image_ext: null
               usr_txt_password: "Password#123"
-              usr_txt_token: null
-              usr_sta_state: 1
-              usr_sta_employee_state: 1
-              usr_txt_verification_code: null
-              date_deleted_at: null
       responses:
         "201":
-          description: Created
+          description: Created. Sensitive fields (password and verification/reset fields) are omitted in response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+              example:
+                usr_idt_id: 10
+                loc_idt_id: 1
+                usr_txt_name: "Juan"
+                usr_txt_lastname: "Perez"
+                usr_txt_dni: "12345678"
+                usr_dat_dateofbirth: "1990-01-01"
+                usr_int_gender: 1
+                usr_txt_celphone: "3511234567"
+                usr_txt_cuit_cuil: "20345678901"
+                usr_txt_email: "juan.perez@correo.com"
+                usr_txt_streetname: "Calle Falsa"
+                usr_txt_streetnumber: "1234"
+                usr_txt_floor: "2"
+                usr_txt_department: "B"
+                usr_txt_postalcode: "5000"
+                usr_int_rol: 1
+                usr_dat_registrationdate: "2025-01-01"
+                usr_int_registerorigin: 1
+                usr_txt_registeroriginhash: "web"
+                usr_dat_terminationdate: null
+                usr_int_image: null
+                usr_txt_image_ext: null
+                usr_sta_state: 1
+                usr_sta_employee_state: 1
+                date_deleted_at: null
         "400":
           description: Validation error
         "409":
@@ -340,6 +287,66 @@ paths:
           description: Validation error
         "401":
           description: Invalid credentials
+        "403":
+          description: Account not verified
+  /auth/verify-email:
+    post:
+      summary: Verify email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyEmailRequest"
+      responses:
+        "200":
+          description: Email verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Invalid or expired code
+        "404":
+          description: User not found
+  /auth/request-password-reset:
+    post:
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestPasswordResetRequest"
+      responses:
+        "200":
+          description: If the email exists, a reset code is sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Validation error
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Invalid or expired code
+        "404":
+          description: User not found
   /users:
     post:
       summary: Create user (admin/receptionist)
@@ -352,36 +359,29 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateUserRequest"
             example:
-              loc_idt_id: 1
-              usr_txt_name: "Juan"
-              usr_txt_lastname: "Perez"
-              usr_txt_dni: "12345678"
-              usr_dat_dateofbirth: "1990-01-01"
-              usr_int_gender: 1
-              usr_txt_celphone: "3511234567"
-              usr_txt_cuit_cuil: "20345678901"
               usr_txt_email: "juan.perez@correo.com"
-              usr_txt_streetname: "Calle Falsa"
-              usr_txt_streetnumber: "1234"
-              usr_txt_floor: "2"
-              usr_txt_department: "B"
-              usr_txt_postalcode: "5000"
               usr_int_rol: 1
-              usr_dat_registrationdate: "2025-01-01"
-              usr_int_registerorigin: 1
-              usr_txt_registeroriginhash: "web"
-              usr_dat_terminationdate: null
-              usr_int_image: null
-              usr_txt_image_ext: null
               usr_txt_password: "Password#123"
-              usr_txt_token: null
+              usr_bol_email_verified: false
               usr_sta_state: 1
               usr_sta_employee_state: 1
-              usr_txt_verification_code: null
-              date_deleted_at: null
       responses:
         "201":
-          description: Created
+          description: Created. Sensitive fields (password and verification/reset fields) are omitted in response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+              example:
+                usr_idt_id: 10
+                usr_txt_email: "juan.perez@correo.com"
+                usr_bol_email_verified: false
+                usr_int_rol: 1
+                usr_sta_state: 1
+                usr_sta_employee_state: 1
+                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
+                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
+                date_deleted_at: null
         "400":
           description: Validation error
         "401":
@@ -401,7 +401,21 @@ paths:
             type: integer
       responses:
         "200":
-          description: OK
+          description: OK. Sensitive fields (password and verification/reset fields) are omitted in response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+              example:
+                usr_idt_id: 10
+                usr_txt_email: "juan.perez@correo.com"
+                usr_bol_email_verified: true
+                usr_int_rol: 4
+                usr_sta_state: 1
+                usr_sta_employee_state: 1
+                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
+                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
+                date_deleted_at: null
         "400":
           description: Invalid id
         "401":
@@ -427,11 +441,25 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateUserRequest"
             example:
-              usr_txt_name: "Juan Carlos"
+              usr_txt_email: "juan.perez@correo.com"
               usr_txt_password: "New#Password1"
       responses:
         "200":
-          description: OK
+          description: OK. Sensitive fields (password and verification/reset fields) are omitted in response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+              example:
+                usr_idt_id: 10
+                usr_txt_email: "juan.perez@correo.com"
+                usr_bol_email_verified: true
+                usr_int_rol: 4
+                usr_sta_state: 1
+                usr_sta_employee_state: 1
+                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
+                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
+                date_deleted_at: null
         "400":
           description: Invalid id
         "401":
