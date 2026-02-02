@@ -1,3 +1,4 @@
+/* global require, module */
 const js = require("@eslint/js");
 const tsParser = require("@typescript-eslint/parser");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
@@ -11,7 +12,7 @@ module.exports = [
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
-        project: "./tsconfig.json",
+        project: "./tsconfig.eslint.json",
       },
       globals: {
         console: "readonly",

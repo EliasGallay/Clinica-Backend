@@ -33,8 +33,30 @@ components:
       properties:
         token:
           type: string
+        refreshToken:
+          type: string
       example:
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken: "r1J2V3Z4Y0p1Qk1i..."
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+      example:
+        refreshToken: "r1J2V3Z4Y0p1Qk1i..."
+    RefreshTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+      example:
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken: "r1J2V3Z4Y0p1Qk1i..."
     MessageResponse:
       type: object
       properties:
@@ -298,6 +320,42 @@ paths:
           description: Invalid credentials
         "403":
           description: Account not verified
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshTokenResponse"
+        "400":
+          description: Validation error
+        "401":
+          description: Invalid refresh token
+  /auth/logout:
+    post:
+      summary: Logout (revoke refresh token)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
   /auth/verify-email:
     post:
       summary: Verify email

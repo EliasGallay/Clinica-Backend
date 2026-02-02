@@ -45,3 +45,20 @@ CREATE TABLE usr_rol (
   CONSTRAINT fk_usr_rol_user FOREIGN KEY (user_id) REFERENCES users (usr_idt_id) ON DELETE CASCADE,
   CONSTRAINT fk_usr_rol_role FOREIGN KEY (rol_id) REFERENCES rol (id) ON DELETE CASCADE
 );
+
+CREATE TABLE refresh_token (
+  rtk_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id INT NOT NULL,
+  rtk_txt_hash VARCHAR(64) NOT NULL,
+  rtk_dat_expires_at TIMESTAMP NOT NULL,
+  rtk_dat_revoked_at TIMESTAMP NULL,
+  rtk_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  rtk_dat_last_used_at TIMESTAMP NULL,
+  rtk_txt_user_agent VARCHAR(200) NULL,
+  rtk_txt_ip VARCHAR(45) NULL,
+
+  CONSTRAINT fk_refresh_token_user FOREIGN KEY (user_id) REFERENCES users (usr_idt_id) ON DELETE CASCADE,
+  CONSTRAINT uq_refresh_token_hash UNIQUE (rtk_txt_hash)
+);
+
+CREATE INDEX idx_refresh_token_user ON refresh_token (user_id);
