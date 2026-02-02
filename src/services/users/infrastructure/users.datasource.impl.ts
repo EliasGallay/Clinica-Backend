@@ -1,21 +1,32 @@
 import type { UserEntity } from "../domain/users.entity";
 import { UserDatasource } from "../domain/users.datasource";
+import type { Model, ModelStatic } from "sequelize";
 import { RolesModel, UsersModel, sequelize } from "../../../infrastructure/db";
 import { toUserEntity } from "./data/users.mapper";
 import type { UsersCreationAttributes, UsersModelInstance } from "./data/users.types";
 
+type RoleAttributes = {
+  id: string;
+  rol_name: string;
+};
+
+type RoleModelInstance = Model<RoleAttributes> & RoleAttributes;
+type ModelStaticRoleModel = ModelStatic<RoleModelInstance>;
+
 export class UserPostgresDatasourceImpl implements UserDatasource {
+  private readonly rolesModel = RolesModel as ModelStaticRoleModel;
+
   private async resolveRoleIds(roleNames: string[]): Promise<string[]> {
     const uniqueRoleNames = [...new Set(roleNames)];
     if (!uniqueRoleNames.length) return [];
-    const roles = await RolesModel.findAll({
+    const roles = await this.rolesModel.findAll({
       where: { rol_name: uniqueRoleNames },
       attributes: ["id", "rol_name"],
     });
     if (roles.length !== uniqueRoleNames.length) {
       throw new Error("ROLE_NOT_FOUND");
     }
-    return roles.map((role) => role.id as string);
+    return roles.map((role) => role.id);
   }
 
   private getRoleNames(model: UsersModelInstance): string[] {
@@ -29,7 +40,7 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
     const model = (await UsersModel.findByPk(id, {
       include: [
         {
-          model: RolesModel,
+          model: this.rolesModel,
           as: "roles",
           attributes: ["rol_name"],
           through: { attributes: [] },
@@ -44,7 +55,7 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
       where: { usr_txt_email: email },
       include: [
         {
-          model: RolesModel,
+          model: this.rolesModel,
           as: "roles",
           attributes: ["rol_name"],
           through: { attributes: [] },
@@ -75,7 +86,7 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
       const reloaded = (await UsersModel.findByPk(created.usr_idt_id, {
         include: [
           {
-            model: RolesModel,
+            model: this.rolesModel,
             as: "roles",
             attributes: ["rol_name"],
             through: { attributes: [] },
@@ -124,7 +135,7 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
       const reloaded = (await UsersModel.findByPk(id, {
         include: [
           {
-            model: RolesModel,
+            model: this.rolesModel,
             as: "roles",
             attributes: ["rol_name"],
             through: { attributes: [] },

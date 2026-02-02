@@ -36,6 +36,7 @@ Variables principales:
 - `SMTP_USER`
 - `SMTP_PASS`
 - `MAIL_FROM`
+- `EMAIL_SEND_ENABLED` (true/false, si es false loguea los codigos en consola)
 
 ## Scripts
 
