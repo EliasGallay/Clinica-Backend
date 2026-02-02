@@ -1,4 +1,4 @@
-openapi: 3.0.3
+﻿openapi: 3.0.3
 info:
   title: Clinica Backend API
   version: 1.0.0
@@ -116,7 +116,7 @@ components:
       type: object
       required:
         - usr_txt_email
-        - usr_int_rol
+        - roles
         - usr_txt_password
         - usr_sta_state
         - usr_sta_employee_state
@@ -125,9 +125,11 @@ components:
           type: string
           format: email
           maxLength: 254
-        usr_int_rol:
-          type: integer
-          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        roles:
+          type: array
+          items:
+            type: string
+          description: "Lista de roles: admin, recepcionista, medico, paciente"
         usr_txt_password:
           type: string
           minLength: 8
@@ -141,7 +143,8 @@ components:
           type: integer
       example:
         usr_txt_email: "juan.perez@correo.com"
-        usr_int_rol: 1
+        roles:
+          - "admin"
         usr_txt_password: "Password#123"
         usr_bol_email_verified: false
         usr_sta_state: 1
@@ -157,9 +160,11 @@ components:
           maxLength: 254
         usr_bol_email_verified:
           type: boolean
-        usr_int_rol:
-          type: integer
-          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        roles:
+          type: array
+          items:
+            type: string
+          description: "Lista de roles: admin, recepcionista, medico, paciente"
         usr_sta_state:
           type: integer
         usr_sta_employee_state:
@@ -178,7 +183,8 @@ components:
         usr_idt_id: 10
         usr_txt_email: "juan.perez@correo.com"
         usr_bol_email_verified: true
-        usr_int_rol: 4
+        roles:
+          - "paciente"
         usr_sta_state: 1
         usr_sta_employee_state: 1
         usr_dat_created_at: "2026-02-02T03:00:00.000Z"
@@ -191,9 +197,11 @@ components:
           type: string
           format: email
           maxLength: 254
-        usr_int_rol:
-          type: integer
-          description: "1=ADMIN, 2=RECEPTIONIST, 3=DOCTOR, 4=PATIENT"
+        roles:
+          type: array
+          items:
+            type: string
+          description: "Lista de roles: admin, recepcionista, medico, paciente"
         usr_txt_password:
           type: string
           minLength: 8
@@ -250,7 +258,8 @@ paths:
                 usr_txt_floor: "2"
                 usr_txt_department: "B"
                 usr_txt_postalcode: "5000"
-                usr_int_rol: 1
+                roles:
+                  - "admin"
                 usr_dat_registrationdate: "2025-01-01"
                 usr_int_registerorigin: 1
                 usr_txt_registeroriginhash: "web"
@@ -360,7 +369,8 @@ paths:
               $ref: "#/components/schemas/CreateUserRequest"
             example:
               usr_txt_email: "juan.perez@correo.com"
-              usr_int_rol: 1
+              roles:
+                - "admin"
               usr_txt_password: "Password#123"
               usr_bol_email_verified: false
               usr_sta_state: 1
@@ -376,7 +386,8 @@ paths:
                 usr_idt_id: 10
                 usr_txt_email: "juan.perez@correo.com"
                 usr_bol_email_verified: false
-                usr_int_rol: 1
+                roles:
+                  - "admin"
                 usr_sta_state: 1
                 usr_sta_employee_state: 1
                 usr_dat_created_at: "2026-02-02T03:00:00.000Z"
@@ -410,7 +421,8 @@ paths:
                 usr_idt_id: 10
                 usr_txt_email: "juan.perez@correo.com"
                 usr_bol_email_verified: true
-                usr_int_rol: 4
+                roles:
+                  - "paciente"
                 usr_sta_state: 1
                 usr_sta_employee_state: 1
                 usr_dat_created_at: "2026-02-02T03:00:00.000Z"
@@ -454,7 +466,8 @@ paths:
                 usr_idt_id: 10
                 usr_txt_email: "juan.perez@correo.com"
                 usr_bol_email_verified: true
-                usr_int_rol: 4
+                roles:
+                  - "paciente"
                 usr_sta_state: 1
                 usr_sta_employee_state: 1
                 usr_dat_created_at: "2026-02-02T03:00:00.000Z"

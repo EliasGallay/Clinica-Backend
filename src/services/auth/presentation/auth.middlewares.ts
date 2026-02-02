@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+﻿import type { NextFunction, Request, Response } from "express";
 import type { JwtPayload } from "../../../config/adapters/jwt.adapter";
 import { verifyToken } from "../../../config/adapters/jwt.adapter";
 
@@ -23,26 +23,28 @@ export const authRequired = (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const requireRoles =
-  (...roles: number[]) =>
+  (...roles: string[]) =>
   (req: Request, res: Response, next: NextFunction) => {
     const user = (req as Request & { user?: JwtPayload }).user;
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    if (!roles.includes(user.usr_int_rol)) {
+    const userRoles = user.roles ?? [];
+    if (!userRoles.some((role) => roles.includes(role))) {
       return res.status(403).json({ message: "Forbidden" });
     }
     return next();
   };
 
 export const requireSelfOrRoles =
-  (...roles: number[]) =>
+  (...roles: string[]) =>
   (req: Request, res: Response, next: NextFunction) => {
     const user = (req as Request & { user?: JwtPayload }).user;
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    if (roles.includes(user.usr_int_rol)) {
+    const userRoles = user.roles ?? [];
+    if (userRoles.some((role) => roles.includes(role))) {
       return next();
     }
     const id = Number(req.params.id);

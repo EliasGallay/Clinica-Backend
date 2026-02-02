@@ -1,10 +1,10 @@
-export class UserEntity {
+﻿export class UserEntity {
   constructor(
     public usr_idt_id: number,
     public usr_txt_email: string,
     public usr_txt_password: string | null,
     public usr_bol_email_verified: boolean,
-    public usr_int_rol: number,
+    public roles: string[],
     public usr_sta_state: number,
     public usr_sta_employee_state: number,
     public usr_txt_email_verification_code: string | null,
