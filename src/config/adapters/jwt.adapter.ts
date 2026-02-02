@@ -4,7 +4,7 @@ import { JWT_EXPIRE, JWT_SEED } from "../const";
 export type JwtPayload = {
   usr_idt_id: number;
   usr_txt_email: string;
-  usr_int_rol: number;
+  roles: string[];
 };
 
 export const signToken = (payload: JwtPayload): string =>

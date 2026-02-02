@@ -5,7 +5,6 @@ export type UsersAttributes = {
   usr_txt_email: string;
   usr_txt_password: string;
   usr_bol_email_verified: boolean;
-  usr_int_rol: number;
   usr_sta_state: number;
   usr_sta_employee_state: number;
   usr_txt_email_verification_code: string | null;
