@@ -21,7 +21,7 @@ export class CreateUserUseCase {
       data.usr_txt_email,
       hashedPassword,
       data.usr_bol_email_verified ?? false,
-      data.usr_int_rol,
+      data.roles,
       data.usr_sta_state,
       data.usr_sta_employee_state,
       null,
