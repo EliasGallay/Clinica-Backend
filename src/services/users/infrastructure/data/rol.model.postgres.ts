@@ -7,10 +7,7 @@ export default (sequelize: Sequelize) => {
     declare rol_description: string | null;
     declare rol_weight: number | null;
 
-    static associate(models: {
-      users?: ModelStatic<Model>;
-      usr_rol?: ModelStatic<Model>;
-    }) {
+    static associate(models: { users?: ModelStatic<Model>; usr_rol?: ModelStatic<Model> }) {
       if (models.users && models.usr_rol) {
         RolModel.belongsToMany(models.users, {
           through: models.usr_rol,

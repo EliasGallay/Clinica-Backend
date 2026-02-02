@@ -110,9 +110,11 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
         const roleIds = await this.resolveRoleIds(roles);
         const model = (await UsersModel.findByPk(id, {
           transaction,
-        })) as UsersModelInstance & {
-          setRoles?: (roleIds: string[], options: { transaction: unknown }) => Promise<void>;
-        } | null;
+        })) as
+          | (UsersModelInstance & {
+              setRoles?: (roleIds: string[], options: { transaction: unknown }) => Promise<void>;
+            })
+          | null;
         if (!model) return null;
         if (model.setRoles) {
           await model.setRoles(roleIds, { transaction });

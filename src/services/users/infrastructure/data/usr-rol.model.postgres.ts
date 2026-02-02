@@ -5,10 +5,7 @@ export default (sequelize: Sequelize) => {
     declare user_id: number;
     declare rol_id: string;
 
-    static associate(models: {
-      users?: ModelStatic<Model>;
-      rol?: ModelStatic<Model>;
-    }) {
+    static associate(models: { users?: ModelStatic<Model>; rol?: ModelStatic<Model> }) {
       if (models.users) {
         UsrRolModel.belongsTo(models.users, { foreignKey: "user_id", as: "user" });
       }

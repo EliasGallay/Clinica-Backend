@@ -45,10 +45,10 @@ describe("POST /auth/register", () => {
     vi.spyOn(UsersModel, "create").mockResolvedValue(baseUserModel() as any);
     vi.spyOn(UsersModel, "update").mockResolvedValue([1] as any);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel() as any);
-    vi.spyOn(RolesModel, "findAll").mockResolvedValue([{ id: "role-id", rol_name: "paciente" }] as any);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as any),
-    );
+    vi.spyOn(RolesModel, "findAll").mockResolvedValue([
+      { id: "role-id", rol_name: "paciente" },
+    ] as any);
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) => callback({} as any));
 
     const res = await request(app).post("/auth/register").send({
       usr_txt_email: "juan.perez@correo.com",

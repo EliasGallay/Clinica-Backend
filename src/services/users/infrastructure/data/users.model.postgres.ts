@@ -24,10 +24,7 @@ export default (sequelize: Sequelize) => {
     declare usr_dat_updated_at: Date;
     declare date_deleted_at: Date | null;
 
-    static associate(models: {
-      rol?: ModelStatic<Model>;
-      usr_rol?: ModelStatic<Model>;
-    }) {
+    static associate(models: { rol?: ModelStatic<Model>; usr_rol?: ModelStatic<Model> }) {
       if (models.rol && models.usr_rol) {
         UserModel.belongsToMany(models.rol, {
           through: models.usr_rol,
