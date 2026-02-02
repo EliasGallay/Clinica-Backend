@@ -49,7 +49,7 @@ const baseUserModel = (id = 10): UsersModelInstance =>
     date_deleted_at: null,
     usr_txt_image_ext: null,
     roles: [{ rol_name: "paciente" }],
-  }) as UsersModelInstance & { roles: Array<{ rol_name: string }> };
+  }) as unknown as UsersModelInstance & { roles: Array<{ rol_name: string }> };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -83,9 +83,10 @@ describe("PUT /users/:id", () => {
   it("allows receptionist to update", async () => {
     vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(10));
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as Transaction),
-    );
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
 
     const res = await request(app)
       .put("/users/10")
@@ -116,9 +117,10 @@ describe("PUT /users/:id", () => {
   it("returns 404 when user does not exist", async () => {
     vi.spyOn(UsersModel, "update").mockResolvedValue([0] as [number]);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(null as UsersModelInstance | null);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as Transaction),
-    );
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
 
     const res = await request(app)
       .put("/users/10")
@@ -188,13 +190,11 @@ describe("POST /users", () => {
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(10));
     vi.spyOn(RolesModel, "findAll").mockResolvedValue([
       { id: "role-id", rol_name: "admin" },
-    ] as unknown as Array<{
-      id: string;
-      rol_name: string;
-    }>);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as Transaction),
-    );
+    ] as unknown as Array<ReturnType<typeof RolesModel.build>>);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
 
     const res = await request(app)
       .post("/users")

@@ -159,6 +159,9 @@ export const register = async (req: Request, res: Response) => {
     if (error instanceof Error && error.message === "DNI_ALREADY_EXISTS") {
       return res.status(409).json({ message: "DNI already exists" });
     }
+    if (error instanceof Error && error.message === "ROLE_NOT_FOUND") {
+      return res.status(500).json({ message: "Roles not configured" });
+    }
     return res.status(500).json({ message: "Internal server error" });
   }
 };

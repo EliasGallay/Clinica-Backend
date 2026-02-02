@@ -7,6 +7,7 @@ import { RefreshTokensModel, RolesModel, UsersModel, sequelize } from "../src/in
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
 import type { RefreshTokenModelInstance } from "../src/services/auth/infrastructure/data/refresh-token.types";
 import { hashRefreshToken } from "../src/services/auth/domain/utils/refresh-token";
+import { hashCode } from "../src/services/auth/domain/utils/verification";
 
 vi.mock("../src/config/adapters/jwt.adapter", () => ({
   signToken: () => "test-token",
@@ -72,13 +73,11 @@ describe("POST /auth/register", () => {
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel());
     vi.spyOn(RolesModel, "findAll").mockResolvedValue([
       { id: "role-id", rol_name: "paciente" },
-    ] as unknown as Array<{
-      id: string;
-      rol_name: string;
-    }>);
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as Transaction),
-    );
+    ] as unknown as Array<ReturnType<typeof RolesModel.build>>);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
 
     const res = await request(app).post("/auth/register").send({
       usr_txt_email: "juan.perez@correo.com",
@@ -147,9 +146,10 @@ describe("POST /auth/refresh", () => {
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(user);
     vi.spyOn(RefreshTokensModel, "update").mockResolvedValue([1] as [number]);
     vi.spyOn(RefreshTokensModel, "create").mockResolvedValue(baseRefreshTokenModel());
-    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
-      callback({} as Transaction),
-    );
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
 
     const res = await request(app).post("/auth/refresh").send({ refreshToken });
 
@@ -197,5 +197,150 @@ describe("POST /auth/logout", () => {
       .send({ refreshToken: "refresh-token-example-1234567890" });
 
     expect(res.status).toBe(200);
+  });
+});
+
+describe("POST /auth/verify-email", () => {
+  it("verifies email with valid code", async () => {
+    const code = "123456";
+    const codeHash = await hashCode(code);
+    const model = baseUserModel();
+    model.usr_txt_email_verification_code = codeHash;
+    model.usr_dat_email_verification_expires_at = new Date("2026-02-03T03:00:00.000Z");
+    model.usr_int_email_verification_attempts = 0;
+
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(model);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(model);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
+
+    const res = await request(app).post("/auth/verify-email").send({
+      usr_txt_email: "juan.perez@correo.com",
+      usr_txt_verification_code: code,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Email verified");
+  });
+
+  it("returns 400 for invalid code", async () => {
+    const codeHash = await hashCode("654321");
+    const model = baseUserModel();
+    model.usr_txt_email_verification_code = codeHash;
+    model.usr_dat_email_verification_expires_at = new Date("2026-02-03T03:00:00.000Z");
+
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(model);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(model);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
+
+    const res = await request(app).post("/auth/verify-email").send({
+      usr_txt_email: "juan.perez@correo.com",
+      usr_txt_verification_code: "000000",
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid verification code");
+  });
+});
+
+describe("POST /auth/resend-verification", () => {
+  it("returns 200 when email exists", async () => {
+    const model = baseUserModel();
+    model.usr_bol_email_verified = false;
+
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(model);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(model);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
+
+    const res = await request(app).post("/auth/resend-verification").send({
+      usr_txt_email: "resend@correo.com",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("If the email exists, a verification code was sent");
+  });
+});
+
+describe("POST /auth/request-password-reset", () => {
+  it("returns 200 even if email exists", async () => {
+    const model = baseUserModel();
+
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(model);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(model);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
+
+    const res = await request(app).post("/auth/request-password-reset").send({
+      usr_txt_email: "reset@correo.com",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("If the email exists, a reset code was sent");
+  });
+});
+
+describe("POST /auth/reset-password", () => {
+  it("updates password with valid code", async () => {
+    const code = "777777";
+    const codeHash = await hashCode(code);
+    const model = baseUserModel();
+    model.usr_txt_password_reset_token = codeHash;
+    model.usr_dat_password_reset_expires_at = new Date("2026-02-03T03:00:00.000Z");
+    model.usr_int_password_reset_attempts = 0;
+
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(model);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(model);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
+
+    const res = await request(app).post("/auth/reset-password").send({
+      usr_txt_email: "reset@correo.com",
+      usr_txt_verification_code: code,
+      usr_txt_password: "Password#123",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe("Password updated");
+  });
+
+  it("returns 400 for invalid code", async () => {
+    const codeHash = await hashCode("111111");
+    const model = baseUserModel();
+    model.usr_txt_password_reset_token = codeHash;
+    model.usr_dat_password_reset_expires_at = new Date("2026-02-03T03:00:00.000Z");
+
+    vi.spyOn(UsersModel, "findOne").mockResolvedValue(model);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as [number]);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(model);
+    vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
+      const callback = typeof args[0] === "function" ? args[0] : args[1];
+      return (callback as (transaction: Transaction) => unknown)({} as Transaction);
+    }) as unknown as typeof sequelize.transaction);
+
+    const res = await request(app).post("/auth/reset-password").send({
+      usr_txt_email: "reset@correo.com",
+      usr_txt_verification_code: "000000",
+      usr_txt_password: "Password#123",
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid reset code");
   });
 });

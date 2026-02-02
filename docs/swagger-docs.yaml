@@ -11,6 +11,24 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: "Error"
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+      example:
+        errors:
+          formErrors: []
+          fieldErrors:
+            usr_txt_email:
+              - "Invalid email"
     LoginRequest:
       type: object
       required:
@@ -20,7 +38,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
         usr_txt_password:
           type: string
           minLength: 1
@@ -73,7 +91,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
         usr_txt_verification_code:
           type: string
           minLength: 6
@@ -89,7 +107,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
       example:
         usr_txt_email: "juan.perez@correo.com"
     ResetPasswordRequest:
@@ -102,7 +120,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
         usr_txt_verification_code:
           type: string
           minLength: 6
@@ -245,6 +263,40 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  uptime:
+                    type: number
+                  timestamp:
+                    type: string
+                    format: date-time
+                  db:
+                    type: string
+                    example: "up"
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "down"
+                  uptime:
+                    type: number
+                  timestamp:
+                    type: string
+                    format: date-time
+                  db:
+                    type: string
+                    example: "down"
   /auth/register:
     post:
       summary: Register user
@@ -266,35 +318,37 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
               example:
                 usr_idt_id: 10
-                loc_idt_id: 1
-                usr_txt_name: "Juan"
-                usr_txt_lastname: "Perez"
-                usr_txt_dni: "12345678"
-                usr_dat_dateofbirth: "1990-01-01"
-                usr_int_gender: 1
-                usr_txt_celphone: "3511234567"
-                usr_txt_cuit_cuil: "20345678901"
                 usr_txt_email: "juan.perez@correo.com"
-                usr_txt_streetname: "Calle Falsa"
-                usr_txt_streetnumber: "1234"
-                usr_txt_floor: "2"
-                usr_txt_department: "B"
-                usr_txt_postalcode: "5000"
+                usr_bol_email_verified: false
                 roles:
-                  - "admin"
-                usr_dat_registrationdate: "2025-01-01"
-                usr_int_registerorigin: 1
-                usr_txt_registeroriginhash: "web"
-                usr_dat_terminationdate: null
-                usr_int_image: null
-                usr_txt_image_ext: null
-                usr_sta_state: 1
+                  - "paciente"
+                usr_sta_state: 2
                 usr_sta_employee_state: 1
+                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
+                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
                 date_deleted_at: null
         "400":
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "409":
           description: Email or DNI already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Email already exists"
+        "500":
+          description: Roles not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Roles not configured"
   /auth/login:
     post:
       summary: Login
@@ -316,10 +370,26 @@ paths:
                 $ref: "#/components/schemas/LoginResponse"
         "400":
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid credentials"
         "403":
           description: Account not verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Account not verified"
   /auth/refresh:
     post:
       summary: Refresh access token
@@ -338,8 +408,18 @@ paths:
                 $ref: "#/components/schemas/RefreshTokenResponse"
         "400":
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid refresh token"
   /auth/logout:
     post:
       summary: Logout (revoke refresh token)
@@ -356,6 +436,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
   /auth/verify-email:
     post:
       summary: Verify email
@@ -374,8 +460,28 @@ paths:
                 $ref: "#/components/schemas/MessageResponse"
         "400":
           description: Invalid or expired code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid verification code"
         "404":
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "User not found"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Too many requests"
   /auth/request-password-reset:
     post:
       summary: Request password reset
@@ -394,6 +500,18 @@ paths:
                 $ref: "#/components/schemas/MessageResponse"
         "400":
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Too many requests"
   /auth/reset-password:
     post:
       summary: Reset password
@@ -412,8 +530,28 @@ paths:
                 $ref: "#/components/schemas/MessageResponse"
         "400":
           description: Invalid or expired code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid reset code"
         "404":
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "User not found"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Too many requests"
   /users:
     post:
       summary: Create user (admin/receptionist)
@@ -453,10 +591,26 @@ paths:
                 date_deleted_at: null
         "400":
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
   /users/{id}:
     get:
       summary: Get user by id (admin/receptionist/doctor or self)
@@ -488,12 +642,36 @@ paths:
                 date_deleted_at: null
         "400":
           description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid id"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
         "404":
           description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "User not found"
     put:
       summary: Update user (admin/receptionist)
       security:
@@ -533,12 +711,36 @@ paths:
                 date_deleted_at: null
         "400":
           description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid id"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
         "404":
           description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "User not found"
     delete:
       summary: Soft delete user (admin)
       security:
@@ -554,7 +756,39 @@ paths:
           description: No Content
         "400":
           description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid id"
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
+  /:
+    get:
+      summary: Root health
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
