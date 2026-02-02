@@ -1,0 +1,1 @@
+INSERT INTO users (usr_txt_email, usr_txt_password, usr_bol_email_verified, usr_int_rol, usr_sta_state, usr_sta_employee_state, usr_dat_created_at, usr_dat_updated_at) SELECT 'admin@clinica.local', '$2b$10$REEMPLAZAR_POR_HASH_REAL', TRUE, 1, 1, 1, NOW(), NOW()WHERE NOT EXISTS (SELECT 1 FROM users WHERE usr_txt_email = 'admin@clinica.local');
