@@ -1,3 +1,6 @@
+-- Prerequisite: pgcrypto extension
+-- CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TABLE users (
   usr_idt_id SERIAL PRIMARY KEY,
 
@@ -5,7 +8,6 @@ CREATE TABLE users (
   usr_txt_password VARCHAR(100) NOT NULL,
   usr_bol_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
 
-  usr_int_rol SMALLINT NOT NULL,
   usr_sta_state SMALLINT NOT NULL,
   usr_sta_employee_state SMALLINT NOT NULL,
 
@@ -24,4 +26,22 @@ CREATE TABLE users (
   date_deleted_at TIMESTAMP NULL,
 
   CONSTRAINT uq_users_email UNIQUE (usr_txt_email)
+);
+
+CREATE TABLE rol (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  rol_name VARCHAR NOT NULL,
+  rol_description VARCHAR(50) NULL,
+  rol_weight INT NULL,
+
+  CONSTRAINT uq_rol_name UNIQUE (rol_name)
+);
+
+CREATE TABLE usr_rol (
+  user_id INT NOT NULL,
+  rol_id UUID NOT NULL,
+
+  CONSTRAINT pk_usr_rol PRIMARY KEY (user_id, rol_id),
+  CONSTRAINT fk_usr_rol_user FOREIGN KEY (user_id) REFERENCES users (usr_idt_id) ON DELETE CASCADE,
+  CONSTRAINT fk_usr_rol_role FOREIGN KEY (rol_id) REFERENCES rol (id) ON DELETE CASCADE
 );

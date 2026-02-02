@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { Role } from "../../../../shared/constants";
 
 export const updateUserDtoSchema = z.object({
   usr_txt_email: z.string().email().max(254).optional(),
-  usr_int_rol: z.number().int().optional(),
+  roles: z.array(z.nativeEnum(Role)).min(1).optional(),
   usr_txt_password: z
     .string()
     .min(8)
