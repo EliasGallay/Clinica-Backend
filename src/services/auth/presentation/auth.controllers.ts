@@ -1,6 +1,8 @@
 ﻿import type { Request, Response } from "express";
 import {
   loginDtoSchema,
+  logoutDtoSchema,
+  refreshTokenDtoSchema,
   requestPasswordResetDtoSchema,
   registerDtoSchema,
   resendVerificationDtoSchema,
@@ -9,6 +11,8 @@ import {
 } from "../domain/dtos";
 import {
   LoginUseCase,
+  LogoutUseCase,
+  RefreshTokenUseCase,
   RequestPasswordResetUseCase,
   ResetPasswordUseCase,
   VerifyEmailUseCase,
@@ -23,13 +27,17 @@ import { ConsoleEmailSender } from "../infrastructure/console-email-sender";
 import { CreateUserUseCase } from "../../users/domain/use-cases";
 import { UserPostgresDatasourceImpl } from "../../users/infrastructure/users.datasource.impl";
 import { UserRepositoryImpl } from "../../users/infrastructure/users.repository.impl";
+import { RefreshTokenRepositoryImpl } from "../infrastructure/refresh-token.repository.impl";
 import { hitRateLimit } from "./rate-limit";
 import { Role } from "../../../shared/constants";
 import { EMAIL_SEND_ENABLED } from "../../../config/const";
 
 const datasource = new UserPostgresDatasourceImpl();
 const repository = new UserRepositoryImpl(datasource);
-const loginUseCase = new LoginUseCase(repository);
+const refreshTokenRepository = new RefreshTokenRepositoryImpl();
+const loginUseCase = new LoginUseCase(repository, refreshTokenRepository);
+const refreshTokenUseCase = new RefreshTokenUseCase(repository, refreshTokenRepository);
+const logoutUseCase = new LogoutUseCase(refreshTokenRepository);
 const createUserUseCase = new CreateUserUseCase(repository);
 const verifyEmailUseCase = new VerifyEmailUseCase(repository);
 const requestPasswordResetUseCase = new RequestPasswordResetUseCase(repository);
@@ -68,7 +76,10 @@ export const login = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await loginUseCase.execute(parsed.data);
+    const result = await loginUseCase.execute(parsed.data, {
+      userAgent: req.get("user-agent"),
+      ip: req.ip,
+    });
     return res.status(200).json(result);
   } catch (error) {
     if (error instanceof Error && error.message === "ACCOUNT_INACTIVE") {
@@ -76,6 +87,33 @@ export const login = async (req: Request, res: Response) => {
     }
     return res.status(401).json({ message: "Invalid credentials" });
   }
+};
+
+export const refreshToken = async (req: Request, res: Response) => {
+  const parsed = refreshTokenDtoSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ errors: parsed.error.flatten() });
+  }
+
+  try {
+    const result = await refreshTokenUseCase.execute(parsed.data.refreshToken, {
+      userAgent: req.get("user-agent"),
+      ip: req.ip,
+    });
+    return res.status(200).json(result);
+  } catch {
+    return res.status(401).json({ message: "Invalid refresh token" });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  const parsed = logoutDtoSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ errors: parsed.error.flatten() });
+  }
+
+  await logoutUseCase.execute(parsed.data.refreshToken);
+  return res.status(200).json({ message: "OK" });
 };
 
 export const register = async (req: Request, res: Response) => {
@@ -120,6 +158,9 @@ export const register = async (req: Request, res: Response) => {
     }
     if (error instanceof Error && error.message === "DNI_ALREADY_EXISTS") {
       return res.status(409).json({ message: "DNI already exists" });
+    }
+    if (error instanceof Error && error.message === "ROLE_NOT_FOUND") {
+      return res.status(500).json({ message: "Roles not configured" });
     }
     return res.status(500).json({ message: "Internal server error" });
   }
