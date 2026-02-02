@@ -24,7 +24,7 @@ export class LoginUseCase {
     const token = signToken({
       usr_idt_id: user.usr_idt_id,
       usr_txt_email: user.usr_txt_email,
-      usr_int_rol: user.usr_int_rol,
+      roles: user.roles,
     });
 
     return { token };
