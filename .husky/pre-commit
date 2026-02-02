@@ -1,2 +1,2 @@
-npm run fix
+npx lint-staged
 npm run test
