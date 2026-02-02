@@ -1,17 +1,21 @@
 import request from "supertest";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { app } from "../src/app";
-import { UsersModel } from "../src/infrastructure/db";
+import { RolesModel, UsersModel, sequelize } from "../src/infrastructure/db";
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
 
 vi.mock("../src/config/adapters/jwt.adapter", () => ({
   verifyToken: (token: string) => {
-    if (token === "admin") return { usr_idt_id: 1, usr_txt_email: "a@a.com", usr_int_rol: 1 };
+    if (token === "admin")
+      return { usr_idt_id: 1, usr_txt_email: "a@a.com", roles: ["admin"] };
     if (token === "receptionist")
-      return { usr_idt_id: 2, usr_txt_email: "r@r.com", usr_int_rol: 2 };
-    if (token === "doctor") return { usr_idt_id: 3, usr_txt_email: "d@d.com", usr_int_rol: 3 };
-    if (token === "patient-1") return { usr_idt_id: 10, usr_txt_email: "p1@p.com", usr_int_rol: 4 };
-    if (token === "patient-2") return { usr_idt_id: 11, usr_txt_email: "p2@p.com", usr_int_rol: 4 };
+      return { usr_idt_id: 2, usr_txt_email: "r@r.com", roles: ["recepcionista"] };
+    if (token === "doctor")
+      return { usr_idt_id: 3, usr_txt_email: "d@d.com", roles: ["medico"] };
+    if (token === "patient-1")
+      return { usr_idt_id: 10, usr_txt_email: "p1@p.com", roles: ["paciente"] };
+    if (token === "patient-2")
+      return { usr_idt_id: 11, usr_txt_email: "p2@p.com", roles: ["paciente"] };
     throw new Error("Invalid token");
   },
 }));
@@ -33,7 +37,6 @@ const baseUserModel = (id = 10): UsersModelInstance =>
     usr_txt_floor: "2",
     usr_txt_department: "B",
     usr_txt_postalcode: "5000",
-    usr_int_rol: 4,
     usr_dat_registrationdate: new Date("2025-01-01"),
     usr_int_registerorigin: 1,
     usr_txt_registeroriginhash: "web",
@@ -46,7 +49,8 @@ const baseUserModel = (id = 10): UsersModelInstance =>
     usr_txt_verification_code: null,
     date_deleted_at: null,
     usr_txt_image_ext: null,
-  }) as UsersModelInstance;
+    roles: [{ rol_name: "paciente" }],
+  }) as UsersModelInstance & { roles: Array<{ rol_name: string }> };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -80,6 +84,9 @@ describe("PUT /users/:id", () => {
   it("allows receptionist to update", async () => {
     vi.spyOn(UsersModel, "update").mockResolvedValue([1] as any);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(10) as any);
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
+      callback({} as any),
+    );
 
     const res = await request(app)
       .put("/users/10")
@@ -109,6 +116,10 @@ describe("PUT /users/:id", () => {
 
   it("returns 404 when user does not exist", async () => {
     vi.spyOn(UsersModel, "update").mockResolvedValue([0] as any);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(null as any);
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
+      callback({} as any),
+    );
 
     const res = await request(app)
       .put("/users/10")
@@ -157,7 +168,7 @@ describe("POST /users", () => {
     usr_txt_floor: "2",
     usr_txt_department: "B",
     usr_txt_postalcode: "5000",
-    usr_int_rol: 1,
+    roles: ["admin"],
     usr_dat_registrationdate: "2025-01-01",
     usr_int_registerorigin: 1,
     usr_txt_registeroriginhash: "web",
@@ -175,6 +186,11 @@ describe("POST /users", () => {
   it("allows admin to create", async () => {
     vi.spyOn(UsersModel, "findOne").mockResolvedValue(null as any);
     vi.spyOn(UsersModel, "create").mockResolvedValue(baseUserModel(10) as any);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(10) as any);
+    vi.spyOn(RolesModel, "findAll").mockResolvedValue([{ id: "role-id", rol_name: "admin" }] as any);
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) =>
+      callback({} as any),
+    );
 
     const res = await request(app)
       .post("/users")

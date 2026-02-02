@@ -10,7 +10,6 @@ export default (sequelize: Sequelize) => {
     declare usr_txt_email: string;
     declare usr_txt_password: string;
     declare usr_bol_email_verified: boolean;
-    declare usr_int_rol: number;
     declare usr_sta_state: number;
     declare usr_sta_employee_state: number;
     declare usr_txt_email_verification_code: string | null;
@@ -26,12 +25,17 @@ export default (sequelize: Sequelize) => {
     declare date_deleted_at: Date | null;
 
     static associate(models: {
-      loan_application?: ModelStatic<Model>;
-      rls_usu_org_broker?: ModelStatic<Model>;
-      notification?: ModelStatic<Model>;
-      locality?: ModelStatic<Model>;
+      rol?: ModelStatic<Model>;
+      usr_rol?: ModelStatic<Model>;
     }) {
-      void models;
+      if (models.rol && models.usr_rol) {
+        UserModel.belongsToMany(models.rol, {
+          through: models.usr_rol,
+          as: "roles",
+          foreignKey: "user_id",
+          otherKey: "rol_id",
+        });
+      }
     }
   }
 
@@ -67,11 +71,6 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         field: "usr_bol_email_verified",
         defaultValue: false,
-      },
-      usr_int_rol: {
-        type: DataTypes.SMALLINT,
-        allowNull: false,
-        field: "usr_int_rol",
       },
       usr_sta_state: {
         type: DataTypes.SMALLINT,
