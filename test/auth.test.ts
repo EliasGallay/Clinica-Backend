@@ -12,33 +12,23 @@ vi.mock("../src/config/adapters/jwt.adapter", () => ({
 const baseUserModel = (): UsersModelInstance =>
   ({
     usr_idt_id: 1,
-    loc_idt_id: 1,
-    usr_txt_name: "Juan",
-    usr_txt_lastname: "Perez",
-    usr_txt_dni: "12345678",
-    usr_dat_dateofbirth: new Date("1990-01-01"),
-    usr_int_gender: 1,
-    usr_txt_celphone: "3511234567",
-    usr_txt_cuit_cuil: "20345678901",
     usr_txt_email: "juan.perez@correo.com",
-    usr_txt_streetname: "Calle Falsa",
-    usr_txt_streetnumber: "1234",
-    usr_txt_floor: "2",
-    usr_txt_department: "B",
-    usr_txt_postalcode: "5000",
-    usr_int_rol: 1,
-    usr_dat_registrationdate: new Date("2025-01-01"),
-    usr_int_registerorigin: 1,
-    usr_txt_registeroriginhash: "web",
-    usr_dat_terminationdate: null,
-    usr_int_image: null,
     usr_txt_password: null,
-    usr_txt_token: null,
+    usr_bol_email_verified: false,
+    usr_int_rol: 1,
     usr_sta_state: 1,
     usr_sta_employee_state: 1,
-    usr_txt_verification_code: null,
+    usr_txt_email_verification_code: null,
+    usr_dat_email_verification_expires_at: null,
+    usr_int_email_verification_attempts: 0,
+    usr_dat_email_verification_last_sent_at: null,
+    usr_txt_password_reset_token: null,
+    usr_dat_password_reset_expires_at: null,
+    usr_int_password_reset_attempts: 0,
+    usr_dat_password_reset_last_sent_at: null,
+    usr_dat_created_at: new Date("2026-02-02T03:00:00.000Z"),
+    usr_dat_updated_at: new Date("2026-02-02T03:00:00.000Z"),
     date_deleted_at: null,
-    usr_txt_image_ext: null,
   }) as UsersModelInstance;
 
 beforeEach(() => {
@@ -53,35 +43,12 @@ describe("POST /auth/register", () => {
   it("creates a user and returns 201", async () => {
     vi.spyOn(UsersModel, "findOne").mockResolvedValue(null as any);
     vi.spyOn(UsersModel, "create").mockResolvedValue(baseUserModel() as any);
+    vi.spyOn(UsersModel, "update").mockResolvedValue([1] as any);
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel() as any);
 
     const res = await request(app).post("/auth/register").send({
-      loc_idt_id: 1,
-      usr_txt_name: "Juan",
-      usr_txt_lastname: "Perez",
-      usr_txt_dni: "12345678",
-      usr_dat_dateofbirth: "1990-01-01",
-      usr_int_gender: 1,
-      usr_txt_celphone: "3511234567",
-      usr_txt_cuit_cuil: "20345678901",
       usr_txt_email: "juan.perez@correo.com",
-      usr_txt_streetname: "Calle Falsa",
-      usr_txt_streetnumber: "1234",
-      usr_txt_floor: "2",
-      usr_txt_department: "B",
-      usr_txt_postalcode: "5000",
-      usr_int_rol: 1,
-      usr_dat_registrationdate: "2025-01-01",
-      usr_int_registerorigin: 1,
-      usr_txt_registeroriginhash: "web",
-      usr_dat_terminationdate: null,
-      usr_int_image: null,
-      usr_txt_image_ext: null,
       usr_txt_password: "Password#123",
-      usr_txt_token: null,
-      usr_sta_state: 1,
-      usr_sta_employee_state: 1,
-      usr_txt_verification_code: null,
-      date_deleted_at: null,
     });
 
     expect(res.status).toBe(201);
@@ -101,6 +68,8 @@ describe("POST /auth/login", () => {
   it("returns token for valid credentials", async () => {
     const model = baseUserModel();
     model.usr_txt_password = bcrypt.hashSync("Password#123", 10);
+    model.usr_bol_email_verified = true;
+    model.usr_sta_state = 1;
     vi.spyOn(UsersModel, "findOne").mockResolvedValue(model as any);
 
     const res = await request(app).post("/auth/login").send({

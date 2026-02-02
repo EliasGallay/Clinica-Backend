@@ -13,10 +13,6 @@ export class UserRepositoryImpl implements UserRepository {
     return this.datasource.getByEmail(email);
   }
 
-  getByDni(dni: string): Promise<UserEntity | null> {
-    return this.datasource.getByDni(dni);
-  }
-
   create(user: UserEntity): Promise<UserEntity> {
     return this.datasource.create(user);
   }
