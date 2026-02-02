@@ -31,6 +31,11 @@ Variables principales:
 - `DB_PASSWORD`
 - `DB_HOST`
 - `DB_PORT`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `MAIL_FROM`
 
 ## Scripts
 

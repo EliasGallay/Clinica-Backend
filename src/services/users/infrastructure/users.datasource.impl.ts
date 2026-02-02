@@ -17,13 +17,6 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
     return model ? toUserEntity(model) : null;
   }
 
-  async getByDni(dni: string): Promise<UserEntity | null> {
-    const model = (await UsersModel.findOne({
-      where: { usr_txt_dni: dni },
-    })) as UsersModelInstance | null;
-    return model ? toUserEntity(model) : null;
-  }
-
   async create(user: UserEntity): Promise<UserEntity> {
     const { usr_idt_id, ...data } = user as UsersCreationAttributes & { usr_idt_id?: number };
     void usr_idt_id;
