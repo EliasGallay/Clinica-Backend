@@ -3,6 +3,7 @@ import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER, ENV } from "../../conf
 import initUsersModel from "../../services/users/infrastructure/data/users.model.postgres";
 import initRolModel from "../../services/users/infrastructure/data/rol.model.postgres";
 import initUsrRolModel from "../../services/users/infrastructure/data/usr-rol.model.postgres";
+import initRefreshTokenModel from "../../services/auth/infrastructure/data/refresh-token.model.postgres";
 
 export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
@@ -16,7 +17,7 @@ export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   },
 });
 
-const modelDefiners = [initUsersModel, initRolModel, initUsrRolModel];
+const modelDefiners = [initUsersModel, initRolModel, initUsrRolModel, initRefreshTokenModel];
 
 for (const defineModel of modelDefiners) {
   defineModel(sequelize);
@@ -36,3 +37,4 @@ Object.values(sequelize.models).forEach((model) => {
 export const UsersModel = sequelize.models.users;
 export const RolesModel = sequelize.models.rol;
 export const UserRolesModel = sequelize.models.usr_rol;
+export const RefreshTokensModel = sequelize.models.refresh_token;

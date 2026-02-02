@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: ["**"]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-lint-typecheck:
     runs-on: ubuntu-latest
