@@ -1,4 +1,4 @@
-import type { UserEntity } from "../domain/users.entity";
+﻿import type { UserEntity } from "../domain/users.entity";
 import { UserDatasource } from "../domain/users.datasource";
 import type { Model, ModelStatic } from "sequelize";
 import { RolesModel, UsersModel, sequelize } from "../../../infrastructure/db";
@@ -151,3 +151,4 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
     await UsersModel.update({ date_deleted_at: new Date() }, { where: { usr_idt_id: id } });
   }
 }
+

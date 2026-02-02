@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+﻿import bcrypt from "bcryptjs";
 import type { CreateUserDto } from "../dtos";
 import type { UserRepository } from "../user.repository";
 import { UserEntity } from "../users.entity";
@@ -40,3 +40,4 @@ export class CreateUserUseCase {
     return this.repository.create(entity);
   }
 }
+

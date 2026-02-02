@@ -1,4 +1,4 @@
-export class UserEntity {
+﻿export class UserEntity {
   constructor(
     public usr_idt_id: number,
     public usr_txt_email: string,
@@ -20,3 +20,4 @@ export class UserEntity {
     public date_deleted_at: Date | null,
   ) {}
 }
+

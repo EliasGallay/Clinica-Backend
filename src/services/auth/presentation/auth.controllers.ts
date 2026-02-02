@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+﻿import type { Request, Response } from "express";
 import {
   loginDtoSchema,
   requestPasswordResetDtoSchema,
@@ -250,3 +250,4 @@ export const resetPassword = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid reset code" });
   }
 };
+

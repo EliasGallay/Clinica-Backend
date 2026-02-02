@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 import { Role } from "../../../../shared/constants";
 
 export const createUserDtoSchema = z.object({
@@ -18,3 +18,4 @@ export const createUserDtoSchema = z.object({
 });
 
 export type CreateUserDto = z.infer<typeof createUserDtoSchema>;
+

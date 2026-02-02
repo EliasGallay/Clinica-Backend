@@ -1,4 +1,4 @@
-# Clinica Backend
+﻿# Clinica Backend
 
 Backend en Node.js + TypeScript con Express, Sequelize y Postgres.
 
@@ -70,3 +70,4 @@ Husky ejecuta:
 
 1. `npm run fix`
 2. `npm test`
+

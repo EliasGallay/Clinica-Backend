@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+﻿import type { NextFunction, Request, Response } from "express";
 import type { JwtPayload } from "../../../config/adapters/jwt.adapter";
 import { verifyToken } from "../../../config/adapters/jwt.adapter";
 
@@ -53,3 +53,4 @@ export const requireSelfOrRoles =
     }
     return res.status(403).json({ message: "Forbidden" });
   };
+
