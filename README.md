@@ -26,6 +26,7 @@ Variables principales:
 - `PORT`
 - `JWT_SEED`
 - `JWT_EXPIRE`
+- `REFRESH_TOKEN_EXPIRE`
 - `DB_NAME`
 - `DB_USER`
 - `DB_PASSWORD`
