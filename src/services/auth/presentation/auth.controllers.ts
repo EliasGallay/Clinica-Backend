@@ -19,10 +19,13 @@ import {
   hashCode,
 } from "../domain/utils/verification";
 import { MailerSendEmailSender } from "../infrastructure/mailersend-email-sender";
+import { ConsoleEmailSender } from "../infrastructure/console-email-sender";
 import { CreateUserUseCase } from "../../users/domain/use-cases";
 import { UserPostgresDatasourceImpl } from "../../users/infrastructure/users.datasource.impl";
 import { UserRepositoryImpl } from "../../users/infrastructure/users.repository.impl";
 import { hitRateLimit } from "./rate-limit";
+import { Role } from "../../../shared/constants";
+import { EMAIL_SEND_ENABLED } from "../../../config/const";
 
 const datasource = new UserPostgresDatasourceImpl();
 const repository = new UserRepositoryImpl(datasource);
@@ -31,7 +34,7 @@ const createUserUseCase = new CreateUserUseCase(repository);
 const verifyEmailUseCase = new VerifyEmailUseCase(repository);
 const requestPasswordResetUseCase = new RequestPasswordResetUseCase(repository);
 const resetPasswordUseCase = new ResetPasswordUseCase(repository);
-const emailSender = new MailerSendEmailSender();
+const emailSender = EMAIL_SEND_ENABLED ? new MailerSendEmailSender() : new ConsoleEmailSender();
 
 const toSafeUser = (user: Awaited<ReturnType<typeof createUserUseCase.execute>>) => {
   const {
@@ -84,7 +87,7 @@ export const register = async (req: Request, res: Response) => {
   try {
     const user = await createUserUseCase.execute({
       ...parsed.data,
-      usr_int_rol: 4,
+      roles: [Role.PATIENT],
       usr_sta_state: 2,
       usr_sta_employee_state: 1,
       usr_bol_email_verified: false,

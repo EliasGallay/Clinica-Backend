@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import request from "supertest";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { app } from "../src/app";
-import { UsersModel } from "../src/infrastructure/db";
+import { RolesModel, UsersModel, sequelize } from "../src/infrastructure/db";
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
 
 vi.mock("../src/config/adapters/jwt.adapter", () => ({
@@ -15,7 +15,6 @@ const baseUserModel = (): UsersModelInstance =>
     usr_txt_email: "juan.perez@correo.com",
     usr_txt_password: null,
     usr_bol_email_verified: false,
-    usr_int_rol: 1,
     usr_sta_state: 1,
     usr_sta_employee_state: 1,
     usr_txt_email_verification_code: null,
@@ -29,7 +28,8 @@ const baseUserModel = (): UsersModelInstance =>
     usr_dat_created_at: new Date("2026-02-02T03:00:00.000Z"),
     usr_dat_updated_at: new Date("2026-02-02T03:00:00.000Z"),
     date_deleted_at: null,
-  }) as UsersModelInstance;
+    roles: [{ rol_name: "admin" }],
+  }) as UsersModelInstance & { roles: Array<{ rol_name: string }> };
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -45,6 +45,10 @@ describe("POST /auth/register", () => {
     vi.spyOn(UsersModel, "create").mockResolvedValue(baseUserModel() as any);
     vi.spyOn(UsersModel, "update").mockResolvedValue([1] as any);
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel() as any);
+    vi.spyOn(RolesModel, "findAll").mockResolvedValue([
+      { id: "role-id", rol_name: "paciente" },
+    ] as any);
+    vi.spyOn(sequelize, "transaction").mockImplementation(async (callback) => callback({} as any));
 
     const res = await request(app).post("/auth/register").send({
       usr_txt_email: "juan.perez@correo.com",

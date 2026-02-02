@@ -1,13 +1,13 @@
 import type { UsersModelInstance } from "./users.types";
 import { UserEntity } from "../../domain/users.entity";
 
-export const toUserEntity = (model: UsersModelInstance): UserEntity =>
+export const toUserEntity = (model: UsersModelInstance, roles: string[]): UserEntity =>
   new UserEntity(
     model.usr_idt_id,
     model.usr_txt_email,
     model.usr_txt_password,
     model.usr_bol_email_verified,
-    model.usr_int_rol,
+    roles,
     model.usr_sta_state,
     model.usr_sta_employee_state,
     model.usr_txt_email_verification_code,
