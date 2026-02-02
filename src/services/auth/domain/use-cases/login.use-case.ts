@@ -17,6 +17,10 @@ export class LoginUseCase {
       throw new Error("INVALID_CREDENTIALS");
     }
 
+    if (!user.usr_bol_email_verified || user.usr_sta_state !== 1) {
+      throw new Error("ACCOUNT_INACTIVE");
+    }
+
     const token = signToken({
       usr_idt_id: user.usr_idt_id,
       usr_txt_email: user.usr_txt_email,
