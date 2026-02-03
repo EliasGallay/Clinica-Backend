@@ -12,6 +12,6 @@ export const getHealth = async (_req: Request, res: Response) => {
     await sequelize.authenticate();
     res.status(200).json({ ...base, db: "up" });
   } catch {
-    res.status(503).json({ ...base, db: "down" });
+    res.status(503).json({ ...base, status: "down", db: "down" });
   }
 };
