@@ -3,7 +3,10 @@ import { Role } from "../../../../shared/constants";
 
 export const updateUserDtoSchema = z.object({
   usr_txt_email: z.string().email().max(254).optional(),
-  roles: z.array(z.nativeEnum(Role)).min(1).optional(),
+  roles: z
+    .array(z.enum([Role.ADMIN, Role.RECEPTIONIST]))
+    .min(1)
+    .optional(),
   usr_txt_password: z
     .string()
     .min(8)

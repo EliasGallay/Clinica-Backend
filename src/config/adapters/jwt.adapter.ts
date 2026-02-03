@@ -5,6 +5,7 @@ export type JwtPayload = {
   usr_idt_id: number;
   usr_txt_email: string;
   roles: string[];
+  ver: number;
 };
 
 export const signToken = (payload: JwtPayload): string =>
