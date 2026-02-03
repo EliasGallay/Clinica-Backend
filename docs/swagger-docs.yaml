@@ -4,19 +4,6 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3001
-tags:
-  - name: Health
-    description: Health checks
-  - name: Auth
-    description: Authentication and account flows
-  - name: Users
-    description: Administrative users
-  - name: Persons
-    description: Person records
-  - name: Doctors
-    description: Doctors
-  - name: Patients
-    description: Patients
 components:
   securitySchemes:
     bearerAuth:
@@ -76,8 +63,6 @@ components:
       properties:
         refreshToken:
           type: string
-          minLength: 20
-          maxLength: 500
       example:
         refreshToken: "r1J2V3Z4Y0p1Qk1i..."
     RefreshTokenResponse:
@@ -97,17 +82,6 @@ components:
           type: string
       example:
         message: "OK"
-    ResendVerificationRequest:
-      type: object
-      required:
-        - usr_txt_email
-      properties:
-        usr_txt_email:
-          type: string
-          format: email
-          maxLength: 50
-      example:
-        usr_txt_email: "juan.perez@correo.com"
     PersonRequest:
       type: object
       required:
@@ -309,7 +283,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
         usr_txt_verification_code:
           type: string
           minLength: 6
@@ -325,7 +299,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
       example:
         usr_txt_email: "juan.perez@correo.com"
     ResetPasswordRequest:
@@ -338,7 +312,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 50
+          maxLength: 254
         usr_txt_verification_code:
           type: string
           minLength: 6
@@ -370,9 +344,6 @@ components:
           type: array
           items:
             type: string
-            enum:
-              - "admin"
-              - "recepcionista"
           description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
@@ -451,9 +422,6 @@ components:
           type: array
           items:
             type: string
-            enum:
-              - "admin"
-              - "recepcionista"
           description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
@@ -472,8 +440,6 @@ components:
 paths:
   /health:
     get:
-      tags:
-        - Health
       summary: Health check
       responses:
         "200":
@@ -514,8 +480,6 @@ paths:
                     example: "down"
   /auth/login:
     post:
-      tags:
-        - Auth
       summary: Login
       requestBody:
         required: true
@@ -557,8 +521,6 @@ paths:
                 message: "Account not verified"
   /auth/refresh:
     post:
-      tags:
-        - Auth
       summary: Refresh access token
       requestBody:
         required: true
@@ -589,8 +551,6 @@ paths:
                 message: "Invalid refresh token"
   /auth/logout:
     post:
-      tags:
-        - Auth
       summary: Logout (revoke refresh token)
       requestBody:
         required: true
@@ -613,8 +573,6 @@ paths:
                 $ref: "#/components/schemas/ValidationErrorResponse"
   /auth/verify-email:
     post:
-      tags:
-        - Auth
       summary: Verify email
       requestBody:
         required: true
@@ -653,42 +611,8 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 message: "Too many requests"
-  /auth/resend-verification:
-    post:
-      tags:
-        - Auth
-      summary: Resend verification email
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ResendVerificationRequest"
-      responses:
-        "200":
-          description: If the email exists, a verification code is sent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "429":
-          description: Too many requests
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Too many requests"
   /auth/request-password-reset:
     post:
-      tags:
-        - Auth
       summary: Request password reset
       requestBody:
         required: true
@@ -719,8 +643,6 @@ paths:
                 message: "Too many requests"
   /auth/reset-password:
     post:
-      tags:
-        - Auth
       summary: Reset password
       requestBody:
         required: true
@@ -761,8 +683,6 @@ paths:
                 message: "Too many requests"
   /users:
     post:
-      tags:
-        - Users
       summary: Create user (admin only)
       security:
         - bearerAuth: []
@@ -801,37 +721,11 @@ paths:
                 usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
                 date_deleted_at: null
         "400":
-          description: Validation error or person not found
+          description: Validation error
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ValidationErrorResponse"
-                  - $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                validation:
-                  value:
-                    errors:
-                      formErrors: []
-                      fieldErrors:
-                        usr_txt_email:
-                          - "Invalid email"
-                personNotFound:
-                  value:
-                    message: "Person not found"
-        "409":
-          description: Email already exists or person already linked
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                emailExists:
-                  value:
-                    message: "Email already exists"
-                personLinked:
-                  value:
-                    message: "Person already linked"
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
           content:
@@ -850,8 +744,6 @@ paths:
                 message: "Forbidden"
   /users/{id}:
     get:
-      tags:
-        - Users
       summary: Get user by id (admin/receptionist)
       security:
         - bearerAuth: []
@@ -913,8 +805,6 @@ paths:
               example:
                 message: "User not found"
     put:
-      tags:
-        - Users
       summary: Update user (admin/receptionist)
       description: "Recepcionista no puede editar usuarios admin ni otros recepcionistas, ni cambiar roles."
       security:
@@ -986,8 +876,6 @@ paths:
               example:
                 message: "User not found"
     delete:
-      tags:
-        - Users
       summary: Soft delete user (admin)
       security:
         - bearerAuth: []
@@ -1026,8 +914,6 @@ paths:
                 message: "Forbidden"
   /:
     get:
-      tags:
-        - Health
       summary: Root health
       responses:
         "200":
@@ -1042,8 +928,6 @@ paths:
                     example: "ok"
   /persons:
     post:
-      tags:
-        - Persons
       summary: Create person (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1066,19 +950,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrorResponse"
-        "409":
-          description: DNI or email already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                dniExists:
-                  value:
-                    message: "DNI already exists"
-                emailExists:
-                  value:
-                    message: "Person email already exists"
         "401":
           description: Unauthorized
           content:
@@ -1097,8 +968,6 @@ paths:
                 message: "Forbidden"
   /users/me:
     get:
-      tags:
-        - Users
       summary: Get current user (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1117,10 +986,16 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 message: "Unauthorized"
+        "409":
+          description: DNI or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "DNI already exists"
   /persons/{id}:
     get:
-      tags:
-        - Persons
       summary: Get person by id (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1171,8 +1046,6 @@ paths:
                 message: "Person not found"
   /doctors:
     post:
-      tags:
-        - Doctors
       summary: Create doctor (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1190,24 +1063,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/DoctorResponse"
         "400":
-          description: Validation error or person not found
+          description: Validation error
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ValidationErrorResponse"
-                  - $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                validation:
-                  value:
-                    errors:
-                      formErrors: []
-                      fieldErrors:
-                        per_id:
-                          - "Expected number, received string"
-                personNotFound:
-                  value:
-                    message: "Person not found"
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
           content:
@@ -1240,8 +1100,6 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
   /patients:
     post:
-      tags:
-        - Patients
       summary: Create patient (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1259,24 +1117,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/PatientResponse"
         "400":
-          description: Validation error or person not found
+          description: Validation error
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ValidationErrorResponse"
-                  - $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                validation:
-                  value:
-                    errors:
-                      formErrors: []
-                      fieldErrors:
-                        per_id:
-                          - "Expected number, received string"
-                personNotFound:
-                  value:
-                    message: "Person not found"
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
           content:
