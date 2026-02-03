@@ -1,6 +1,6 @@
-import type { UserEntity } from "../domain/users.entity";
+import type { UserAuthSnapshot, UserEntity } from "../domain/users.entity";
 import { UserDatasource } from "../domain/users.datasource";
-import type { Model, ModelStatic } from "sequelize";
+import type { Model, ModelStatic, Transaction } from "sequelize";
 import { RolesModel, UsersModel, sequelize } from "../../../infrastructure/db";
 import { toUserEntity } from "./data/users.mapper";
 import type { UsersCreationAttributes, UsersModelInstance } from "./data/users.types";
@@ -63,6 +63,34 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
       ],
     })) as UsersModelInstance | null;
     return model ? toUserEntity(model, this.getRoleNames(model)) : null;
+  }
+
+  async getByPersonId(perId: number): Promise<UserEntity | null> {
+    const model = (await UsersModel.findOne({
+      where: { per_id: perId },
+      include: [
+        {
+          model: this.rolesModel,
+          as: "roles",
+          attributes: ["rol_name"],
+          through: { attributes: [] },
+        },
+      ],
+    })) as UsersModelInstance | null;
+    return model ? toUserEntity(model, this.getRoleNames(model)) : null;
+  }
+
+  async getAuthSnapshot(id: number): Promise<UserAuthSnapshot | null> {
+    const model = (await UsersModel.findByPk(id, {
+      attributes: ["usr_idt_id", "usr_int_token_version", "date_deleted_at"],
+      paranoid: false,
+    })) as UsersModelInstance | null;
+    if (!model) return null;
+    return {
+      usr_idt_id: model.usr_idt_id,
+      usr_int_token_version: model.usr_int_token_version,
+      date_deleted_at: model.date_deleted_at,
+    };
   }
 
   async create(user: UserEntity): Promise<UserEntity> {
@@ -149,5 +177,13 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
 
   async delete(id: number): Promise<void> {
     await UsersModel.update({ date_deleted_at: new Date() }, { where: { usr_idt_id: id } });
+  }
+
+  async incrementTokenVersion(id: number, transaction?: Transaction): Promise<void> {
+    await UsersModel.increment("usr_int_token_version", {
+      by: 1,
+      where: { usr_idt_id: id },
+      transaction,
+    });
   }
 }
