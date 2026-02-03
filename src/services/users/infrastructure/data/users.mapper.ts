@@ -4,12 +4,14 @@ import { UserEntity } from "../../domain/users.entity";
 export const toUserEntity = (model: UsersModelInstance, roles: string[]): UserEntity =>
   new UserEntity(
     model.usr_idt_id,
+    model.per_id,
     model.usr_txt_email,
     model.usr_txt_password,
     model.usr_bol_email_verified,
     roles,
     model.usr_sta_state,
     model.usr_sta_employee_state,
+    model.usr_int_token_version,
     model.usr_txt_email_verification_code,
     model.usr_dat_email_verification_expires_at,
     model.usr_int_email_verification_attempts,

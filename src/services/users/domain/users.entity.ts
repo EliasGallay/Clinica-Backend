@@ -1,12 +1,14 @@
 export class UserEntity {
   constructor(
     public usr_idt_id: number,
+    public per_id: number | null,
     public usr_txt_email: string,
     public usr_txt_password: string | null,
     public usr_bol_email_verified: boolean,
     public roles: string[],
     public usr_sta_state: number,
     public usr_sta_employee_state: number,
+    public usr_int_token_version: number,
     public usr_txt_email_verification_code: string | null,
     public usr_dat_email_verification_expires_at: Date | null,
     public usr_int_email_verification_attempts: number,
@@ -20,3 +22,9 @@ export class UserEntity {
     public date_deleted_at: Date | null,
   ) {}
 }
+
+export type UserAuthSnapshot = {
+  usr_idt_id: number;
+  usr_int_token_version: number;
+  date_deleted_at: Date | null;
+};

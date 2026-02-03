@@ -37,6 +37,7 @@ export class LoginUseCase {
       usr_idt_id: user.usr_idt_id,
       usr_txt_email: user.usr_txt_email,
       roles: user.roles,
+      ver: user.usr_int_token_version,
     });
 
     const refreshToken = generateRefreshToken();
