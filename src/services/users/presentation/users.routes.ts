@@ -1,12 +1,8 @@
 import { Router } from "express";
-import { createUser, deleteUser, getUserById, updateUser } from "./users.controllers";
+import { createUser, deleteUser, getMe, getUserById, updateUser } from "./users.controllers";
 import { validateBody } from "./users.middlewares";
 import { createUserDtoSchema, updateUserDtoSchema } from "../domain/dtos";
-import {
-  authRequired,
-  requireRoles,
-  requireSelfOrRoles,
-} from "../../auth/presentation/auth.middlewares";
+import { authRequired, requireRoles } from "../../auth/presentation/auth.middlewares";
 import { Role } from "../../../shared/constants";
 
 const usersRouter = Router();
@@ -14,16 +10,12 @@ const usersRouter = Router();
 usersRouter.post(
   "/",
   authRequired,
-  requireRoles(Role.ADMIN, Role.RECEPTIONIST),
+  requireRoles(Role.ADMIN),
   validateBody(createUserDtoSchema),
   createUser,
 );
-usersRouter.get(
-  "/:id",
-  authRequired,
-  requireSelfOrRoles(Role.ADMIN, Role.RECEPTIONIST, Role.DOCTOR),
-  getUserById,
-);
+usersRouter.get("/me", authRequired, requireRoles(Role.ADMIN, Role.RECEPTIONIST), getMe);
+usersRouter.get("/:id", authRequired, requireRoles(Role.ADMIN, Role.RECEPTIONIST), getUserById);
 usersRouter.put(
   "/:id",
   authRequired,

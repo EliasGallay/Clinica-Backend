@@ -7,11 +7,13 @@ export default (sequelize: Sequelize) => {
     implements UsersAttributes
   {
     declare usr_idt_id: number;
+    declare per_id: number | null;
     declare usr_txt_email: string;
     declare usr_txt_password: string;
     declare usr_bol_email_verified: boolean;
     declare usr_sta_state: number;
     declare usr_sta_employee_state: number;
+    declare usr_int_token_version: number;
     declare usr_txt_email_verification_code: string | null;
     declare usr_dat_email_verification_expires_at: Date | null;
     declare usr_int_email_verification_attempts: number;
@@ -24,7 +26,11 @@ export default (sequelize: Sequelize) => {
     declare usr_dat_updated_at: Date;
     declare date_deleted_at: Date | null;
 
-    static associate(models: { rol?: ModelStatic<Model>; usr_rol?: ModelStatic<Model> }) {
+    static associate(models: {
+      rol?: ModelStatic<Model>;
+      usr_rol?: ModelStatic<Model>;
+      persons?: ModelStatic<Model>;
+    }) {
       if (models.rol && models.usr_rol) {
         UserModel.belongsToMany(models.rol, {
           through: models.usr_rol,
@@ -32,6 +38,9 @@ export default (sequelize: Sequelize) => {
           foreignKey: "user_id",
           otherKey: "rol_id",
         });
+      }
+      if (models.persons) {
+        UserModel.belongsTo(models.persons, { foreignKey: "per_id", as: "person" });
       }
     }
   }
@@ -44,6 +53,12 @@ export default (sequelize: Sequelize) => {
         allowNull: false,
         primaryKey: true,
         field: "usr_idt_id",
+      },
+      per_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: "per_id",
+        unique: true,
       },
       usr_txt_email: {
         type: DataTypes.STRING(254),
@@ -78,6 +93,12 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.SMALLINT,
         allowNull: false,
         field: "usr_sta_employee_state",
+      },
+      usr_int_token_version: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: "usr_int_token_version",
+        defaultValue: 0,
       },
       usr_txt_email_verification_code: {
         type: DataTypes.STRING(60),

@@ -1,8 +1,27 @@
 -- Prerequisite: pgcrypto extension
 -- CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+CREATE TABLE persons (
+  per_id SERIAL PRIMARY KEY,
+  per_txt_first_name VARCHAR(100) NOT NULL,
+  per_txt_last_name VARCHAR(100) NOT NULL,
+  per_txt_dni VARCHAR(20) NULL,
+  per_dat_birthdate DATE NULL,
+  per_int_gender SMALLINT NULL,
+  per_txt_email VARCHAR(254) NULL,
+  per_txt_phone VARCHAR(30) NULL,
+  per_txt_address VARCHAR(200) NULL,
+  per_sta_state SMALLINT NOT NULL,
+  per_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  per_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  per_dat_deleted_at TIMESTAMP NULL,
+
+  CONSTRAINT uq_persons_dni UNIQUE (per_txt_dni)
+);
+
 CREATE TABLE users (
   usr_idt_id SERIAL PRIMARY KEY,
+  per_id INT NULL UNIQUE,
 
   usr_txt_email VARCHAR(254) NOT NULL,
   usr_txt_password VARCHAR(100) NOT NULL,
@@ -25,7 +44,32 @@ CREATE TABLE users (
   usr_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   date_deleted_at TIMESTAMP NULL,
 
-  CONSTRAINT uq_users_email UNIQUE (usr_txt_email)
+  CONSTRAINT uq_users_email UNIQUE (usr_txt_email),
+  CONSTRAINT fk_users_person FOREIGN KEY (per_id) REFERENCES persons (per_id) ON DELETE SET NULL
+);
+
+CREATE TABLE patients (
+  pat_id SERIAL PRIMARY KEY,
+  per_id INT NOT NULL UNIQUE,
+  pat_sta_state SMALLINT NOT NULL,
+  pat_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  pat_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  pat_dat_deleted_at TIMESTAMP NULL,
+
+  CONSTRAINT fk_patients_person FOREIGN KEY (per_id) REFERENCES persons (per_id) ON DELETE CASCADE
+);
+
+CREATE TABLE doctors (
+  doc_id SERIAL PRIMARY KEY,
+  per_id INT NOT NULL UNIQUE,
+  doc_txt_license VARCHAR(30) NULL,
+  doc_txt_specialty VARCHAR(100) NULL,
+  doc_sta_state SMALLINT NOT NULL,
+  doc_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  doc_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  doc_dat_deleted_at TIMESTAMP NULL,
+
+  CONSTRAINT fk_doctors_person FOREIGN KEY (per_id) REFERENCES persons (per_id) ON DELETE CASCADE
 );
 
 CREATE TABLE rol (

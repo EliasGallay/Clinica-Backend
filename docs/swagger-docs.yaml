@@ -82,6 +82,198 @@ components:
           type: string
       example:
         message: "OK"
+    PersonRequest:
+      type: object
+      required:
+        - per_txt_first_name
+        - per_txt_last_name
+        - per_sta_state
+      properties:
+        per_txt_first_name:
+          type: string
+          maxLength: 100
+        per_txt_last_name:
+          type: string
+          maxLength: 100
+        per_txt_dni:
+          type: string
+          maxLength: 20
+        per_dat_birthdate:
+          type: string
+          format: date
+        per_int_gender:
+          type: integer
+        per_txt_email:
+          type: string
+          format: email
+          maxLength: 254
+        per_txt_phone:
+          type: string
+          maxLength: 30
+        per_txt_address:
+          type: string
+          maxLength: 200
+        per_sta_state:
+          type: integer
+      example:
+        per_txt_first_name: "Juan"
+        per_txt_last_name: "Perez"
+        per_txt_dni: "12345678"
+        per_dat_birthdate: "1990-01-01"
+        per_int_gender: 1
+        per_txt_email: "juan.perez@correo.com"
+        per_txt_phone: "3511234567"
+        per_txt_address: "Calle Falsa 1234"
+        per_sta_state: 1
+    PersonResponse:
+      type: object
+      properties:
+        per_id:
+          type: integer
+        per_txt_first_name:
+          type: string
+        per_txt_last_name:
+          type: string
+        per_txt_dni:
+          type: string
+          nullable: true
+        per_dat_birthdate:
+          type: string
+          format: date
+          nullable: true
+        per_int_gender:
+          type: integer
+          nullable: true
+        per_txt_email:
+          type: string
+          format: email
+          nullable: true
+        per_txt_phone:
+          type: string
+          nullable: true
+        per_txt_address:
+          type: string
+          nullable: true
+        per_sta_state:
+          type: integer
+        per_dat_created_at:
+          type: string
+          format: date-time
+        per_dat_updated_at:
+          type: string
+          format: date-time
+        per_dat_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        per_id: 1
+        per_txt_first_name: "Juan"
+        per_txt_last_name: "Perez"
+        per_txt_dni: "12345678"
+        per_dat_birthdate: "1990-01-01"
+        per_int_gender: 1
+        per_txt_email: "juan.perez@correo.com"
+        per_txt_phone: "3511234567"
+        per_txt_address: "Calle Falsa 1234"
+        per_sta_state: 1
+        per_dat_created_at: "2026-02-02T03:00:00.000Z"
+        per_dat_updated_at: "2026-02-02T03:00:00.000Z"
+        per_dat_deleted_at: null
+    DoctorRequest:
+      type: object
+      required:
+        - per_id
+        - doc_sta_state
+      properties:
+        per_id:
+          type: integer
+        doc_txt_license:
+          type: string
+          maxLength: 30
+        doc_txt_specialty:
+          type: string
+          maxLength: 100
+        doc_sta_state:
+          type: integer
+      example:
+        per_id: 1
+        doc_txt_license: "MP-12345"
+        doc_txt_specialty: "Clinica"
+        doc_sta_state: 1
+    DoctorResponse:
+      type: object
+      properties:
+        doc_id:
+          type: integer
+        per_id:
+          type: integer
+        doc_txt_license:
+          type: string
+          nullable: true
+        doc_txt_specialty:
+          type: string
+          nullable: true
+        doc_sta_state:
+          type: integer
+        doc_dat_created_at:
+          type: string
+          format: date-time
+        doc_dat_updated_at:
+          type: string
+          format: date-time
+        doc_dat_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        doc_id: 1
+        per_id: 1
+        doc_txt_license: "MP-12345"
+        doc_txt_specialty: "Clinica"
+        doc_sta_state: 1
+        doc_dat_created_at: "2026-02-02T03:00:00.000Z"
+        doc_dat_updated_at: "2026-02-02T03:00:00.000Z"
+        doc_dat_deleted_at: null
+    PatientRequest:
+      type: object
+      required:
+        - per_id
+        - pat_sta_state
+      properties:
+        per_id:
+          type: integer
+        pat_sta_state:
+          type: integer
+      example:
+        per_id: 1
+        pat_sta_state: 1
+    PatientResponse:
+      type: object
+      properties:
+        pat_id:
+          type: integer
+        per_id:
+          type: integer
+        pat_sta_state:
+          type: integer
+        pat_dat_created_at:
+          type: string
+          format: date-time
+        pat_dat_updated_at:
+          type: string
+          format: date-time
+        pat_dat_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+      example:
+        pat_id: 1
+        per_id: 1
+        pat_sta_state: 1
+        pat_dat_created_at: "2026-02-02T03:00:00.000Z"
+        pat_dat_updated_at: "2026-02-02T03:00:00.000Z"
+        pat_dat_deleted_at: null
     VerifyEmailRequest:
       type: object
       required:
@@ -134,24 +326,6 @@ components:
         usr_txt_email: "juan.perez@correo.com"
         usr_txt_verification_code: "123456"
         usr_txt_password: "New#Password1"
-    RegisterRequest:
-      type: object
-      required:
-        - usr_txt_email
-        - usr_txt_password
-      properties:
-        usr_txt_email:
-          type: string
-          format: email
-          maxLength: 254
-        usr_txt_password:
-          type: string
-          minLength: 8
-          maxLength: 100
-          description: "Must include uppercase, lowercase, number, and special character."
-      example:
-        usr_txt_email: "juan.perez@correo.com"
-        usr_txt_password: "Password#123"
     CreateUserRequest:
       type: object
       required:
@@ -160,6 +334,7 @@ components:
         - usr_txt_password
         - usr_sta_state
         - usr_sta_employee_state
+        - per_id
       properties:
         usr_txt_email:
           type: string
@@ -169,7 +344,7 @@ components:
           type: array
           items:
             type: string
-          description: "Lista de roles: admin, recepcionista, medico, paciente"
+          description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
           minLength: 8
@@ -181,6 +356,8 @@ components:
           type: integer
         usr_sta_employee_state:
           type: integer
+        per_id:
+          type: integer
       example:
         usr_txt_email: "juan.perez@correo.com"
         roles:
@@ -189,10 +366,13 @@ components:
         usr_bol_email_verified: false
         usr_sta_state: 1
         usr_sta_employee_state: 1
+        per_id: 1
     UserResponse:
       type: object
       properties:
         usr_idt_id:
+          type: integer
+        per_id:
           type: integer
         usr_txt_email:
           type: string
@@ -204,7 +384,7 @@ components:
           type: array
           items:
             type: string
-          description: "Lista de roles: admin, recepcionista, medico, paciente"
+          description: "Lista de roles: admin, recepcionista"
         usr_sta_state:
           type: integer
         usr_sta_employee_state:
@@ -221,10 +401,11 @@ components:
           nullable: true
       example:
         usr_idt_id: 10
+        per_id: 1
         usr_txt_email: "juan.perez@correo.com"
         usr_bol_email_verified: true
         roles:
-          - "paciente"
+          - "admin"
         usr_sta_state: 1
         usr_sta_employee_state: 1
         usr_dat_created_at: "2026-02-02T03:00:00.000Z"
@@ -241,7 +422,7 @@ components:
           type: array
           items:
             type: string
-          description: "Lista de roles: admin, recepcionista, medico, paciente"
+          description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
           minLength: 8
@@ -297,58 +478,6 @@ paths:
                   db:
                     type: string
                     example: "down"
-  /auth/register:
-    post:
-      summary: Register user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterRequest"
-            example:
-              usr_txt_email: "juan.perez@correo.com"
-              usr_txt_password: "Password#123"
-      responses:
-        "201":
-          description: Created. Sensitive fields (password and verification/reset fields) are omitted in response.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponse"
-              example:
-                usr_idt_id: 10
-                usr_txt_email: "juan.perez@correo.com"
-                usr_bol_email_verified: false
-                roles:
-                  - "paciente"
-                usr_sta_state: 2
-                usr_sta_employee_state: 1
-                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
-                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
-                date_deleted_at: null
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrorResponse"
-        "409":
-          description: Email or DNI already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Email already exists"
-        "500":
-          description: Roles not configured
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "Roles not configured"
   /auth/login:
     post:
       summary: Login
@@ -554,7 +683,7 @@ paths:
                 message: "Too many requests"
   /users:
     post:
-      summary: Create user (admin/receptionist)
+      summary: Create user (admin only)
       security:
         - bearerAuth: []
       requestBody:
@@ -571,6 +700,7 @@ paths:
               usr_bol_email_verified: false
               usr_sta_state: 1
               usr_sta_employee_state: 1
+              per_id: 1
       responses:
         "201":
           description: Created. Sensitive fields (password and verification/reset fields) are omitted in response.
@@ -580,6 +710,7 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
               example:
                 usr_idt_id: 10
+                per_id: 1
                 usr_txt_email: "juan.perez@correo.com"
                 usr_bol_email_verified: false
                 roles:
@@ -613,7 +744,7 @@ paths:
                 message: "Forbidden"
   /users/{id}:
     get:
-      summary: Get user by id (admin/receptionist/doctor or self)
+      summary: Get user by id (admin/receptionist)
       security:
         - bearerAuth: []
       parameters:
@@ -631,10 +762,11 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
               example:
                 usr_idt_id: 10
+                per_id: 1
                 usr_txt_email: "juan.perez@correo.com"
                 usr_bol_email_verified: true
                 roles:
-                  - "paciente"
+                  - "admin"
                 usr_sta_state: 1
                 usr_sta_employee_state: 1
                 usr_dat_created_at: "2026-02-02T03:00:00.000Z"
@@ -674,6 +806,7 @@ paths:
                 message: "User not found"
     put:
       summary: Update user (admin/receptionist)
+      description: "Recepcionista no puede editar usuarios admin ni otros recepcionistas, ni cambiar roles."
       security:
         - bearerAuth: []
       parameters:
@@ -700,10 +833,11 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
               example:
                 usr_idt_id: 10
+                per_id: 1
                 usr_txt_email: "juan.perez@correo.com"
                 usr_bol_email_verified: true
                 roles:
-                  - "paciente"
+                  - "admin"
                 usr_sta_state: 1
                 usr_sta_employee_state: 1
                 usr_dat_created_at: "2026-02-02T03:00:00.000Z"
@@ -792,3 +926,229 @@ paths:
                   status:
                     type: string
                     example: "ok"
+  /persons:
+    post:
+      summary: Create person (admin/receptionist)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
+  /users/me:
+    get:
+      summary: Get current user (admin/receptionist)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
+        "409":
+          description: DNI or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "DNI already exists"
+  /persons/{id}:
+    get:
+      summary: Get person by id (admin/receptionist)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonResponse"
+        "400":
+          description: Invalid id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Invalid id"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Person not found"
+  /doctors:
+    post:
+      summary: Create doctor (admin/receptionist)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoctorRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DoctorResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
+        "409":
+          description: Doctor already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Doctor already exists"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /patients:
+    post:
+      summary: Create patient (admin/receptionist)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatientResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
+        "409":
+          description: Patient already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Patient already exists"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
