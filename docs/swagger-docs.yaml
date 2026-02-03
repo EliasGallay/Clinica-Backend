@@ -1,4 +1,4 @@
-openapi: 3.0.3
+﻿openapi: 3.0.3
 info:
   title: Clinica Backend API
   version: 1.0.0
@@ -373,6 +373,7 @@ components:
             enum:
               - "admin"
               - "recepcionista"
+
           description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
@@ -413,6 +414,10 @@ components:
           type: array
           items:
             type: string
+            enum:
+              - "admin"
+              - "recepcionista"
+
           description: "Lista de roles: admin, recepcionista"
         usr_sta_state:
           type: integer
@@ -454,6 +459,7 @@ components:
             enum:
               - "admin"
               - "recepcionista"
+
           description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
@@ -801,37 +807,11 @@ paths:
                 usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
                 date_deleted_at: null
         "400":
-          description: Validation error or person not found
+          description: Validation error
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ValidationErrorResponse"
-                  - $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                validation:
-                  value:
-                    errors:
-                      formErrors: []
-                      fieldErrors:
-                        usr_txt_email:
-                          - "Invalid email"
-                personNotFound:
-                  value:
-                    message: "Person not found"
-        "409":
-          description: Email already exists or person already linked
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                emailExists:
-                  value:
-                    message: "Email already exists"
-                personLinked:
-                  value:
-                    message: "Person already linked"
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
           content:
@@ -1066,19 +1046,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrorResponse"
-        "409":
-          description: DNI or email already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                dniExists:
-                  value:
-                    message: "DNI already exists"
-                emailExists:
-                  value:
-                    message: "Person email already exists"
         "401":
           description: Unauthorized
           content:
@@ -1190,24 +1157,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/DoctorResponse"
         "400":
-          description: Validation error or person not found
+          description: Validation error
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ValidationErrorResponse"
-                  - $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                validation:
-                  value:
-                    errors:
-                      formErrors: []
-                      fieldErrors:
-                        per_id:
-                          - "Expected number, received string"
-                personNotFound:
-                  value:
-                    message: "Person not found"
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
           content:
@@ -1259,24 +1213,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/PatientResponse"
         "400":
-          description: Validation error or person not found
+          description: Validation error
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ValidationErrorResponse"
-                  - $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                validation:
-                  value:
-                    errors:
-                      formErrors: []
-                      fieldErrors:
-                        per_id:
-                          - "Expected number, received string"
-                personNotFound:
-                  value:
-                    message: "Person not found"
+                $ref: "#/components/schemas/ValidationErrorResponse"
         "401":
           description: Unauthorized
           content:

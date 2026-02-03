@@ -61,6 +61,15 @@ Respuestas:
 
 Swagger UI: `GET /api-docs`
 
+Ejemplos:
+
+- Local: `http://localhost:3001/api-docs`
+- Produccion: `https://api.tu-dominio.com/api-docs`
+
+## API docs
+
+Swagger UI: `GET /api-docs`
+
 ## Estructura (DDD)
 
 - `src/config` variables de entorno y constantes
