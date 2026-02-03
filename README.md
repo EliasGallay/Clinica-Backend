@@ -57,6 +57,10 @@ Respuestas:
 - `200` cuando la app y la DB estan OK (`db: "up"`)
 - `503` cuando la DB no responde (`db: "down"`)
 
+## API docs
+
+Swagger UI: `GET /api-docs`
+
 ## Estructura (DDD)
 
 - `src/config` variables de entorno y constantes
