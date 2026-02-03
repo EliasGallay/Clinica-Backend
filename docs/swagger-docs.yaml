@@ -4,6 +4,19 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3001
+tags:
+  - name: Health
+    description: Health checks
+  - name: Auth
+    description: Authentication and account flows
+  - name: Users
+    description: Administrative users
+  - name: Persons
+    description: Person records
+  - name: Doctors
+    description: Doctors
+  - name: Patients
+    description: Patients
 components:
   securitySchemes:
     bearerAuth:
@@ -63,6 +76,8 @@ components:
       properties:
         refreshToken:
           type: string
+          minLength: 20
+          maxLength: 500
       example:
         refreshToken: "r1J2V3Z4Y0p1Qk1i..."
     RefreshTokenResponse:
@@ -82,6 +97,17 @@ components:
           type: string
       example:
         message: "OK"
+    ResendVerificationRequest:
+      type: object
+      required:
+        - usr_txt_email
+      properties:
+        usr_txt_email:
+          type: string
+          format: email
+          maxLength: 50
+      example:
+        usr_txt_email: "juan.perez@correo.com"
     PersonRequest:
       type: object
       required:
@@ -283,7 +309,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 254
+          maxLength: 50
         usr_txt_verification_code:
           type: string
           minLength: 6
@@ -299,7 +325,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 254
+          maxLength: 50
       example:
         usr_txt_email: "juan.perez@correo.com"
     ResetPasswordRequest:
@@ -312,7 +338,7 @@ components:
         usr_txt_email:
           type: string
           format: email
-          maxLength: 254
+          maxLength: 50
         usr_txt_verification_code:
           type: string
           minLength: 6
@@ -344,6 +370,10 @@ components:
           type: array
           items:
             type: string
+            enum:
+              - "admin"
+              - "recepcionista"
+
           description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
@@ -384,6 +414,10 @@ components:
           type: array
           items:
             type: string
+            enum:
+              - "admin"
+              - "recepcionista"
+
           description: "Lista de roles: admin, recepcionista"
         usr_sta_state:
           type: integer
@@ -422,6 +456,10 @@ components:
           type: array
           items:
             type: string
+            enum:
+              - "admin"
+              - "recepcionista"
+
           description: "Lista de roles: admin, recepcionista"
         usr_txt_password:
           type: string
@@ -440,6 +478,8 @@ components:
 paths:
   /health:
     get:
+      tags:
+        - Health
       summary: Health check
       responses:
         "200":
@@ -480,6 +520,8 @@ paths:
                     example: "down"
   /auth/login:
     post:
+      tags:
+        - Auth
       summary: Login
       requestBody:
         required: true
@@ -521,6 +563,8 @@ paths:
                 message: "Account not verified"
   /auth/refresh:
     post:
+      tags:
+        - Auth
       summary: Refresh access token
       requestBody:
         required: true
@@ -551,6 +595,8 @@ paths:
                 message: "Invalid refresh token"
   /auth/logout:
     post:
+      tags:
+        - Auth
       summary: Logout (revoke refresh token)
       requestBody:
         required: true
@@ -573,6 +619,8 @@ paths:
                 $ref: "#/components/schemas/ValidationErrorResponse"
   /auth/verify-email:
     post:
+      tags:
+        - Auth
       summary: Verify email
       requestBody:
         required: true
@@ -611,8 +659,42 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 message: "Too many requests"
+  /auth/resend-verification:
+    post:
+      tags:
+        - Auth
+      summary: Resend verification email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResendVerificationRequest"
+      responses:
+        "200":
+          description: If the email exists, a verification code is sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Too many requests"
   /auth/request-password-reset:
     post:
+      tags:
+        - Auth
       summary: Request password reset
       requestBody:
         required: true
@@ -643,6 +725,8 @@ paths:
                 message: "Too many requests"
   /auth/reset-password:
     post:
+      tags:
+        - Auth
       summary: Reset password
       requestBody:
         required: true
@@ -683,6 +767,8 @@ paths:
                 message: "Too many requests"
   /users:
     post:
+      tags:
+        - Users
       summary: Create user (admin only)
       security:
         - bearerAuth: []
@@ -744,6 +830,8 @@ paths:
                 message: "Forbidden"
   /users/{id}:
     get:
+      tags:
+        - Users
       summary: Get user by id (admin/receptionist)
       security:
         - bearerAuth: []
@@ -805,6 +893,8 @@ paths:
               example:
                 message: "User not found"
     put:
+      tags:
+        - Users
       summary: Update user (admin/receptionist)
       description: "Recepcionista no puede editar usuarios admin ni otros recepcionistas, ni cambiar roles."
       security:
@@ -876,6 +966,8 @@ paths:
               example:
                 message: "User not found"
     delete:
+      tags:
+        - Users
       summary: Soft delete user (admin)
       security:
         - bearerAuth: []
@@ -914,6 +1006,8 @@ paths:
                 message: "Forbidden"
   /:
     get:
+      tags:
+        - Health
       summary: Root health
       responses:
         "200":
@@ -928,6 +1022,8 @@ paths:
                     example: "ok"
   /persons:
     post:
+      tags:
+        - Persons
       summary: Create person (admin/receptionist)
       security:
         - bearerAuth: []
@@ -968,6 +1064,8 @@ paths:
                 message: "Forbidden"
   /users/me:
     get:
+      tags:
+        - Users
       summary: Get current user (admin/receptionist)
       security:
         - bearerAuth: []
@@ -986,16 +1084,10 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 message: "Unauthorized"
-        "409":
-          description: DNI or email already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                message: "DNI already exists"
   /persons/{id}:
     get:
+      tags:
+        - Persons
       summary: Get person by id (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1046,6 +1138,8 @@ paths:
                 message: "Person not found"
   /doctors:
     post:
+      tags:
+        - Doctors
       summary: Create doctor (admin/receptionist)
       security:
         - bearerAuth: []
@@ -1100,6 +1194,8 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
   /patients:
     post:
+      tags:
+        - Patients
       summary: Create patient (admin/receptionist)
       security:
         - bearerAuth: []
