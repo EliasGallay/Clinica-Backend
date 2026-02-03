@@ -2,11 +2,13 @@ import type { Model } from "sequelize";
 
 export type UsersAttributes = {
   usr_idt_id: number;
+  per_id: number | null;
   usr_txt_email: string;
   usr_txt_password: string;
   usr_bol_email_verified: boolean;
   usr_sta_state: number;
   usr_sta_employee_state: number;
+  usr_int_token_version: number;
   usr_txt_email_verification_code: string | null;
   usr_dat_email_verification_expires_at: Date | null;
   usr_int_email_verification_attempts: number;
