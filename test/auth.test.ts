@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import request from "supertest";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { Transaction } from "sequelize";
+import type { Model, Transaction } from "sequelize";
 import { app } from "../src/app";
 import { RefreshTokensModel, UsersModel, sequelize } from "../src/infrastructure/db";
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
@@ -155,7 +155,7 @@ describe("POST /auth/logout", () => {
 
     vi.spyOn(RefreshTokensModel, "findOne").mockResolvedValue(storedToken);
     const updateSpy = vi.spyOn(RefreshTokensModel, "update").mockResolvedValue([1] as [number]);
-    vi.spyOn(UsersModel, "increment").mockResolvedValue([1, []] as [number, UsersModelInstance[]]);
+    vi.spyOn(UsersModel, "increment").mockResolvedValue([[], 1] as [Model[], number]);
     vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
       const callback = typeof args[0] === "function" ? args[0] : args[1];
       return (callback as (transaction: Transaction) => unknown)({} as Transaction);
@@ -199,7 +199,7 @@ describe("POST /auth/logout", () => {
     );
     vi.spyOn(UsersModel, "increment").mockImplementation(async () => {
       currentTokenVersion += 1;
-      return [1, []] as [number, UsersModelInstance[]];
+      return [[], 1] as [Model[], number];
     });
     vi.spyOn(RefreshTokensModel, "update").mockResolvedValue([1] as [number]);
     vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
@@ -240,7 +240,7 @@ describe("POST /auth/logout", () => {
       .mockResolvedValueOnce(baseRefreshTokenModel({ rtk_txt_hash: refreshHash, user_id: 1 }))
       .mockResolvedValueOnce(null as RefreshTokenModelInstance | null);
     vi.spyOn(RefreshTokensModel, "update").mockResolvedValue([1] as [number]);
-    vi.spyOn(UsersModel, "increment").mockResolvedValue([1, []] as [number, UsersModelInstance[]]);
+    vi.spyOn(UsersModel, "increment").mockResolvedValue([[], 1] as [Model[], number]);
     vi.spyOn(sequelize, "transaction").mockImplementation((async (...args: unknown[]) => {
       const callback = typeof args[0] === "function" ? args[0] : args[1];
       return (callback as (transaction: Transaction) => unknown)({} as Transaction);
