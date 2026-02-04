@@ -1,4 +1,4 @@
-﻿export class UserEntity {
+export class UserEntity {
   constructor(
     public usr_idt_id: number,
     public per_id: number | null,

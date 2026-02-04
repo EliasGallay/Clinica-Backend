@@ -1,4 +1,4 @@
-﻿import type { Model } from "sequelize";
+import type { Model } from "sequelize";
 
 export type UsersAttributes = {
   usr_idt_id: number;

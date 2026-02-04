@@ -1,4 +1,4 @@
-﻿import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import type { LoginDto } from "../dtos";
 import type { UserRepository } from "../../../users/domain/user.repository";
 import { signToken } from "../../../../config/adapters/jwt.adapter";

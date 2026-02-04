@@ -1,4 +1,4 @@
-﻿import type { UsersModelInstance } from "./users.types";
+import type { UsersModelInstance } from "./users.types";
 import { UserEntity } from "../../domain/users.entity";
 
 export const toUserEntity = (model: UsersModelInstance, roles: string[]): UserEntity =>

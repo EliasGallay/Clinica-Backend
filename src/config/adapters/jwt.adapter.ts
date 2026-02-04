@@ -1,4 +1,4 @@
-﻿import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { JWT_EXPIRE, JWT_SEED } from "../const";
 
 export type JwtPayload = {

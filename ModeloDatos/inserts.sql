@@ -1,4 +1,4 @@
-﻿INSERT INTO rol (rol_name, rol_description, rol_weight)
+INSERT INTO rol (rol_name, rol_description, rol_weight)
 SELECT 'admin', 'Administrador', 1
 WHERE NOT EXISTS (SELECT 1 FROM rol WHERE rol_name = 'admin');
 
@@ -61,4 +61,3 @@ WHERE u.usr_txt_email = 'admin@clinica.it.com'
     WHERE ur.user_id = u.usr_idt_id
       AND ur.rol_id = r.id
   );
-

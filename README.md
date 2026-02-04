@@ -1,4 +1,4 @@
-﻿# Clinica Backend
+# Clinica Backend
 
 Backend en Node.js + TypeScript con Express, Sequelize y Postgres.
 

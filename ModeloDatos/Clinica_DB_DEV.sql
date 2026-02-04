@@ -1,4 +1,4 @@
--- Optional: enable UUID generation (requires privileges)
+-- Prerequisite: pgcrypto extension
 -- CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE persons (
