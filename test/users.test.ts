@@ -1,10 +1,11 @@
 import request from "supertest";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import type { Transaction } from "sequelize";
 import { app } from "../src/app";
 import { PersonsModel, RolesModel, UsersModel, sequelize } from "../src/infrastructure/db";
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
 import type { PersonsModelInstance } from "../src/services/persons/infrastructure/data/persons.types";
+import { setupPermissionsMock, teardownPermissionsMock } from "./permissions.mock";
 
 vi.mock("../src/config/adapters/jwt.adapter", () => ({
   verifyToken: (token: string) => {
@@ -58,7 +59,12 @@ const baseUserModel = (id = 10): UsersModelInstance =>
     roles: [{ rol_name: "admin" }],
   }) as unknown as UsersModelInstance & { roles: Array<{ rol_name: string }> };
 
+beforeEach(() => {
+  setupPermissionsMock();
+});
+
 afterEach(() => {
+  teardownPermissionsMock();
   vi.restoreAllMocks();
 });
 

@@ -8,6 +8,7 @@ import { authRouter } from "./services/auth/presentation";
 import { personsRouter } from "./services/persons/presentation";
 import { doctorsRouter } from "./services/doctors/presentation";
 import { patientsRouter } from "./services/patients/presentation";
+import { rolesPermissionsRouter } from "./services/permissions/presentation";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/users", usersRouter);
 app.use("/persons", personsRouter);
 app.use("/doctors", doctorsRouter);
 app.use("/patients", patientsRouter);
+app.use("/roles", rolesPermissionsRouter);
 
 app.get("/", (_req, res) => {
   res.status(200).json({ status: "ok" });
