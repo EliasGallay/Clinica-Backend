@@ -3,7 +3,6 @@ import type {
   RolPermissionsAttributes,
   RolPermissionsCreationAttributes,
 } from "./rol-permissions.types";
-import { toDefaultValue } from "sequelize/types/utils";
 
 export default (sequelize: Sequelize) => {
   class RolPermissionModel
