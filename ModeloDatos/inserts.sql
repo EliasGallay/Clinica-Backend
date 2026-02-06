@@ -61,3 +61,43 @@ WHERE u.usr_txt_email = 'admin@clinica.it.com'
     WHERE ur.user_id = u.usr_idt_id
       AND ur.rol_id = r.id
   );
+
+INSERT INTO rol_permission (
+  rol_id,
+  rpe_permission_txt_name,
+  rpe_permission_txt_description,
+  rpe_bol_can_read,
+  rpe_bol_can_write
+)
+SELECT r.id, p.perm, p.description, TRUE, TRUE
+FROM rol r
+CROSS JOIN (
+  VALUES
+    ('users', 'Permite gestionar usuarios.'),
+    ('persons', 'Permite gestionar personas.'),
+    ('patients', 'Permite gestionar pacientes.'),
+    ('doctors', 'Permite gestionar doctores.'),
+    ('roles.permissions', 'Permite gestionar permisos de roles.')
+) AS p(perm, description)
+WHERE r.rol_name = 'admin'
+ON CONFLICT (rol_id, rpe_permission_txt_name) DO NOTHING;
+
+INSERT INTO rol_permission (
+  rol_id,
+  rpe_permission_txt_name,
+  rpe_permission_txt_description,
+  rpe_bol_can_read,
+  rpe_bol_can_write
+)
+SELECT r.id, p.perm, p.description, TRUE, TRUE
+FROM rol r
+CROSS JOIN (
+  VALUES
+    ('users', 'Permite gestionar usuarios.'),
+    ('persons', 'Permite gestionar personas.'),
+    ('patients', 'Permite gestionar pacientes.'),
+    ('doctors', 'Permite gestionar doctores.'),
+    ('roles.permissions', 'Permite gestionar permisos de roles.')
+) AS p(perm, description)
+WHERE r.rol_name = 'recepcionista'
+ON CONFLICT (rol_id, rpe_permission_txt_name) DO NOTHING;

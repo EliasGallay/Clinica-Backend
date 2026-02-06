@@ -17,6 +17,8 @@ tags:
     description: Doctors
   - name: Patients
     description: Patients
+  - name: RolePermissions
+    description: Role permissions
 components:
   securitySchemes:
     bearerAuth:
@@ -475,6 +477,72 @@ components:
       example:
         usr_txt_email: "juan.perez@correo.com"
         usr_txt_password: "New#Password1"
+    RolPermissionResponse:
+      type: object
+      properties:
+        rpe_id:
+          type: integer
+        rol_id:
+          type: string
+          format: uuid
+        rpe_permission_txt_name:
+          type: string
+        rpe_permission_txt_description:
+          type: string
+        rpe_bol_can_read:
+          type: boolean
+        rpe_bol_can_write:
+          type: boolean
+        rpe_dat_created_at:
+          type: string
+          format: date-time
+        rpe_dat_updated_at:
+          type: string
+          format: date-time
+      example:
+        rpe_id: 1
+        rol_id: "11111111-1111-1111-8111-111111111111"
+        rpe_permission_txt_name: "users"
+        rpe_permission_txt_description: "Permite gestionar usuarios."
+        rpe_bol_can_read: true
+        rpe_bol_can_write: false
+        rpe_dat_created_at: "2026-02-02T03:00:00.000Z"
+        rpe_dat_updated_at: "2026-02-02T03:00:00.000Z"
+    RolPermissionUpdateRequest:
+      type: object
+      properties:
+        rpe_bol_can_read:
+          type: boolean
+        rpe_bol_can_write:
+          type: boolean
+      example:
+        rpe_bol_can_read: true
+        rpe_bol_can_write: false
+    PermissionCatalogResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              rpe_permission_txt_name:
+                type: string
+              rpe_permission_txt_description:
+                type: string
+    RolPermissionListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/RolPermissionResponse"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
 paths:
   /health:
     get:
@@ -1244,6 +1312,144 @@ paths:
                 message: "Patient already exists"
         "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /roles/{rolId}/permissions:
+    get:
+      tags:
+        - RolePermissions
+      summary: List role permissions (admin/receptionist)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: rolId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolPermissionListResponse"
+        "400":
+          description: Invalid role id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /roles/{rolId}/permissions/{permissionId}:
+    put:
+      tags:
+        - RolePermissions
+      summary: Update role permission (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: rolId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: permissionId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolPermissionUpdateRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolPermissionResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /roles/permissions:
+    get:
+      tags:
+        - RolePermissions
+      summary: List available permissions (admin/receptionist)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PermissionCatalogResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
           content:
             application/json:
               schema:

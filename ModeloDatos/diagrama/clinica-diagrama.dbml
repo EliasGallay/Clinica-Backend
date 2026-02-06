@@ -106,6 +106,136 @@ Table refresh_token {
     (user_id) [name: "idx_refresh_token_user"]
   }
 }
+Table appointments {
+  app_id int [pk, increment, note: "Identificador único del turno"]
+
+  pat_id int [not null, note: "Paciente del turno"]
+  doc_id int [not null, note: "Médico del turno"]
+
+  app_dat_start_at timestamp [not null, note: "Inicio del turno"]
+  app_dat_end_at timestamp [not null, note: "Fin del turno"]
+
+  app_sta_status smallint [not null, note: "Estado del turno (programado/confirmado/cancelado/ausente/atendido, etc.)"]
+
+  app_txt_reason varchar(200) [null, note: "Motivo o razón del turno"]
+  app_txt_notes varchar(500) [null, note: "Notas internas del turno"]
+
+  app_dat_created_at timestamp [not null, default: `now()`, note: "Fecha de creación"]
+  app_dat_updated_at timestamp [not null, default: `now()`, note: "Fecha de última actualización"]
+  app_dat_deleted_at timestamp [null, note: "Fecha de borrado lógico (soft delete)"]
+
+  Indexes {
+    (doc_id, app_dat_start_at) [name: "idx_appointments_doc_start"]
+    (pat_id, app_dat_start_at) [name: "idx_appointments_pat_start"]
+    (app_sta_status) [name: "idx_appointments_status"]
+  }
+}
+
+Table doctor_availability {
+  dav_id int [pk, increment, note: "Identificador único de disponibilidad"]
+
+  doc_id int [not null, note: "Médico al que pertenece la disponibilidad"]
+
+  dav_int_day_of_week smallint [not null, note: "Día de semana (0-6)"]
+  dav_tim_start_time time [not null, note: "Hora de inicio (hora local)"]
+  dav_tim_end_time time [not null, note: "Hora de fin (hora local)"]
+
+  dav_int_slot_minutes smallint [not null, note: "Duración del slot (minutos)"]
+  dav_sta_state smallint [not null, note: "Estado (activo/inactivo)"]
+
+  dav_dat_created_at timestamp [not null, default: `now()`, note: "Fecha de creación"]
+  dav_dat_updated_at timestamp [not null, default: `now()`, note: "Fecha de última actualización"]
+  dav_dat_deleted_at timestamp [null, note: "Fecha de borrado lógico (soft delete)"]
+
+  Indexes {
+    (doc_id, dav_int_day_of_week) [name: "idx_dav_doc_dow"]
+    (doc_id) [name: "idx_dav_doc"]
+  }
+}
+
+Table doctor_time_off {
+  dto_id int [pk, increment, note: "Identificador único del bloqueo/ausencia"]
+
+  doc_id int [not null, note: "Médico al que se le bloquea la agenda"]
+
+  dto_dat_start_at timestamp [not null, note: "Inicio del bloqueo"]
+  dto_dat_end_at timestamp [not null, note: "Fin del bloqueo"]
+
+  dto_txt_reason varchar(200) [null, note: "Motivo del bloqueo (vacaciones, feriado, congreso, etc.)"]
+  dto_sta_state smallint [not null, note: "Estado (activo/inactivo)"]
+
+  dto_dat_created_at timestamp [not null, default: `now()`, note: "Fecha de creación"]
+  dto_dat_updated_at timestamp [not null, default: `now()`, note: "Fecha de última actualización"]
+  dto_dat_deleted_at timestamp [null, note: "Fecha de borrado lógico (soft delete)"]
+
+  Indexes {
+    (doc_id, dto_dat_start_at) [name: "idx_dto_doc_start"]
+    (doc_id) [name: "idx_dto_doc"]
+  }
+}
+
+Table modules {
+  mod_id int [pk, increment, note: "Identificador único del módulo"]
+  mod_txt_key varchar(60) [not null, unique, note: "Key única (ej: appointments, patients)"]
+  mod_txt_name varchar(100) [not null, note: "Nombre visible"]
+  mod_int_order int [not null, default: 0, note: "Orden para menú"]
+  mod_sta_state smallint [not null, note: "Estado lógico"]
+  mod_dat_created_at timestamp [not null, default: `now()`]
+  mod_dat_updated_at timestamp [not null, default: `now()`]
+  mod_dat_deleted_at timestamp [null]
+  mod_path_to varchar(60) [not null, note: "redireccion"]
+
+  Indexes {
+    (mod_txt_key) [unique, name: "uq_modules_key"]
+  }
+}
+
+Table submodules {
+  sub_id int [pk, increment, note: "Identificador único del submódulo"]
+  mod_id int [not null, note: "FK al módulo"]
+  sub_txt_key varchar(60) [not null, note: "Key dentro del módulo (ej: calendar, availability)"]
+  sub_txt_name varchar(100) [not null, note: "Nombre visible"]
+  sub_int_order int [not null, default: 0, note: "Orden para menú"]
+  sub_sta_state smallint [not null, note: "Estado lógico"]
+  sub_dat_created_at timestamp [not null, default: `now()`]
+  sub_dat_updated_at timestamp [not null, default: `now()`]
+  sub_dat_deleted_at timestamp [null]
+  sub_path_to varchar(60) [not null, note: "redireccion"]
+  sub_icon varchar (60) [note : "icono de material ui"]
+
+  Indexes {
+    (mod_id, sub_txt_key) [unique, name: "uq_submodules_mod_key"]
+    (mod_id) [name: "idx_submodules_mod"]
+  }
+}
+
+  Table rol_permission {
+    rpe_id int [pk, increment, note: "pk de la tabla"]
+    rol_id uuid [not null, note: "FK rol.id"]
+
+
+    rpe_bol_can_write boolean [not null, default: false, note: "Permiso escritura"]
+    rpe_bol_can_read boolean [not null, default: false, note: "Permiso de lectura"]
+    rpe_dat_created_at timestamp [not null, default: `now()`]
+    rpe_dat_updated_at timestamp [not null, default: `now()`]
+
+    rpe_permission_txt_name varchar(120) [not null, note:"nombre del permiso"]
+    rpe_permission_txt_description varchar(120) [not null, note:"descripcion del permiso"]
+
+  Indexes {
+    (rol_id, rpe_permission_txt_name) [unique, name:
+  "uq_rol_permission_role_name"]
+    (rol_id) [name: "idx_rol_permission_rol"]
+  }
+  }
+Ref: submodules.mod_id > modules.mod_id [delete: cascade]
+Ref: rol_permission.rol_id > rol.id [delete: cascade]
+
+Ref: appointments.pat_id > patients.pat_id [delete: cascade]
+Ref: appointments.doc_id > doctors.doc_id [delete: cascade]
+
+Ref: doctor_availability.doc_id > doctors.doc_id [delete: cascade]
+Ref: doctor_time_off.doc_id > doctors.doc_id [delete: cascade]
 
 Ref: users.per_id > persons.per_id [delete: set null]
 

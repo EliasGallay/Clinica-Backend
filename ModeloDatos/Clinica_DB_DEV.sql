@@ -106,3 +106,73 @@ CREATE TABLE refresh_token (
 );
 
 CREATE INDEX idx_refresh_token_user ON refresh_token (user_id);
+
+
+-- MODULES
+CREATE TABLE modules (
+  mod_id SERIAL PRIMARY KEY,
+  mod_txt_key VARCHAR(60) NOT NULL UNIQUE,
+  mod_txt_name VARCHAR(100) NOT NULL,
+  mod_int_order INT NOT NULL DEFAULT 0,
+  mod_sta_state SMALLINT NOT NULL,
+  mod_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  mod_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  mod_dat_deleted_at TIMESTAMP NULL,
+  mod_path_to VARCHAR(60) NOT NULL,
+
+  CONSTRAINT uq_modules_key UNIQUE (mod_txt_key)
+);
+
+CREATE INDEX idx_modules_key ON modules (mod_txt_key);
+
+
+
+-- SUBMODULES
+CREATE TABLE submodules (
+  sub_id SERIAL PRIMARY KEY,
+  mod_id INT NOT NULL,
+  sub_txt_key VARCHAR(60) NOT NULL,
+  sub_txt_name VARCHAR(100) NOT NULL,
+  sub_int_order INT NOT NULL DEFAULT 0,
+  sub_sta_state SMALLINT NOT NULL,
+  sub_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  sub_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  sub_dat_deleted_at TIMESTAMP NULL,
+  sub_path_to VARCHAR(60) NOT NULL,
+  sub_icon VARCHAR(60) NULL,
+
+  CONSTRAINT uq_submodules_mod_key UNIQUE (mod_id, sub_txt_key),
+  CONSTRAINT fk_submodules_mod_id FOREIGN KEY (mod_id)
+    REFERENCES modules (mod_id)
+    ON DELETE CASCADE
+);
+
+CREATE INDEX idx_submodules_mod ON submodules (mod_id);
+
+
+
+-- ROL_PERMISSION
+CREATE TABLE rol_permission (
+  rpe_id SERIAL PRIMARY KEY,
+  rol_id UUID NOT NULL,
+
+  rpe_permission_txt_name VARCHAR(120) NOT NULL,
+  rpe_permission_txt_description VARCHAR(120) NOT NULL,
+
+  rpe_bol_can_write BOOLEAN NOT NULL DEFAULT FALSE,
+  rpe_bol_can_read  BOOLEAN NOT NULL DEFAULT FALSE,
+
+  rpe_dat_created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  rpe_dat_updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+  CONSTRAINT fk_rol_permission_rol
+    FOREIGN KEY (rol_id)
+    REFERENCES rol(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT uq_rol_permission_role_name
+    UNIQUE (rol_id, rpe_permission_txt_name)
+);
+
+CREATE INDEX idx_rol_permission_rol
+  ON rol_permission (rol_id);

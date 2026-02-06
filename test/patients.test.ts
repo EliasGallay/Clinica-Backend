@@ -5,6 +5,7 @@ import { PatientsModel, PersonsModel, UsersModel } from "../src/infrastructure/d
 import type { PatientsModelInstance } from "../src/services/patients/infrastructure/data/patients.types";
 import type { PersonsModelInstance } from "../src/services/persons/infrastructure/data/persons.types";
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
+import { setupPermissionsMock, teardownPermissionsMock } from "./permissions.mock";
 
 vi.mock("../src/config/adapters/jwt.adapter", () => ({
   verifyToken: (token: string) => {
@@ -54,9 +55,11 @@ const baseAuthUser = (): UsersModelInstance =>
 
 beforeEach(() => {
   vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseAuthUser());
+  setupPermissionsMock();
 });
 
 afterEach(() => {
+  teardownPermissionsMock();
   vi.restoreAllMocks();
 });
 

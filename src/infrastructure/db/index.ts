@@ -7,6 +7,7 @@ import initRefreshTokenModel from "../../services/auth/infrastructure/data/refre
 import initPersonsModel from "../../services/persons/infrastructure/data/persons.model.postgres";
 import initPatientsModel from "../../services/patients/infrastructure/data/patients.model.postgres";
 import initDoctorsModel from "../../services/doctors/infrastructure/data/doctors.model.postgres";
+import initRolPermissionModel from "../../services/permissions/infrastructure/data/rol-permission.model.postgres";
 
 export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
@@ -28,6 +29,7 @@ const modelDefiners = [
   initPersonsModel,
   initPatientsModel,
   initDoctorsModel,
+  initRolPermissionModel,
 ];
 
 for (const defineModel of modelDefiners) {
@@ -52,3 +54,4 @@ export const RefreshTokensModel = sequelize.models.refresh_token;
 export const PersonsModel = sequelize.models.persons;
 export const PatientsModel = sequelize.models.patients;
 export const DoctorsModel = sequelize.models.doctors;
+export const RolPermissionsModel = sequelize.models.rol_permission;
