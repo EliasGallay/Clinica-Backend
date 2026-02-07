@@ -3,6 +3,7 @@ import type { UserAuthSnapshot, UserEntity } from "./users.entity";
 
 export abstract class UserDatasource {
   abstract getById(id: number): Promise<UserEntity | null>;
+  abstract getAll(): Promise<UserEntity[]>;
   abstract getByEmail(email: string): Promise<UserEntity | null>;
   abstract getByPersonId(perId: number): Promise<UserEntity | null>;
   abstract getAuthSnapshot(id: number): Promise<UserAuthSnapshot | null>;

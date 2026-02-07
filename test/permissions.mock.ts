@@ -26,6 +26,7 @@ export const setupPermissionsMock = () => {
 
   const permissions = permissionItems.map((name) => ({
     rpe_permission_txt_name: name,
+    rpe_permission_txt_description: `Descripcion de ${name}`,
     rpe_bol_can_read: true,
     rpe_bol_can_write: true,
   }));

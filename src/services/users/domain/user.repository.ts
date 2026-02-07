@@ -3,6 +3,7 @@ import type { UserAuthSnapshot, UserEntity } from "./users.entity";
 
 export interface UserRepository {
   getById(id: number): Promise<UserEntity | null>;
+  getAll(): Promise<UserEntity[]>;
   getByEmail(email: string): Promise<UserEntity | null>;
   getByPersonId(perId: number): Promise<UserEntity | null>;
   getAuthSnapshot(id: number): Promise<UserAuthSnapshot | null>;

@@ -865,15 +865,44 @@ paths:
               example:
                 usr_idt_id: 10
                 per_id: 1
-                usr_txt_email: "juan.perez@correo.com"
-                usr_bol_email_verified: false
-                roles:
-                  - "admin"
-                usr_sta_state: 1
-                usr_sta_employee_state: 1
-                usr_dat_created_at: "2026-02-02T03:00:00.000Z"
-                usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
-                date_deleted_at: null
+        usr_txt_email: "juan.perez@correo.com"
+        usr_bol_email_verified: false
+        roles:
+          - "admin"
+        usr_sta_state: 1
+        usr_sta_employee_state: 1
+        usr_dat_created_at: "2026-02-02T03:00:00.000Z"
+        usr_dat_updated_at: "2026-02-02T03:00:00.000Z"
+        date_deleted_at: null
+    UserPermissionResponse:
+      type: object
+      properties:
+        rpe_permission_txt_name:
+          type: string
+        rpe_permission_txt_description:
+          type: string
+        rpe_bol_can_read:
+          type: boolean
+        rpe_bol_can_write:
+          type: boolean
+    UserProfileResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserResponse"
+        person_data:
+          $ref: "#/components/schemas/PersonResponse"
+          nullable: true
+        patient_data:
+          $ref: "#/components/schemas/PatientResponse"
+          nullable: true
+        doctor_data:
+          $ref: "#/components/schemas/DoctorResponse"
+          nullable: true
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserPermissionResponse"
         "400":
           description: Validation error
           content:
@@ -1130,6 +1159,38 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               example:
                 message: "Forbidden"
+  /users/all:
+    get:
+      tags:
+        - Users
+      summary: List all users (admin/receptionist)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Forbidden"
   /users/me:
     get:
       tags:
@@ -1143,7 +1204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserResponse"
+                $ref: "#/components/schemas/UserProfileResponse"
         "401":
           description: Unauthorized
           content:

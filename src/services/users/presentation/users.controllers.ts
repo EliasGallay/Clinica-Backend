@@ -3,10 +3,18 @@ import { UserPostgresDatasourceImpl } from "../infrastructure/users.datasource.i
 import { UserRepositoryImpl } from "../infrastructure/users.repository.impl";
 import { PersonsPostgresDatasourceImpl } from "../../persons/infrastructure/persons.datasource.impl";
 import { PersonRepositoryImpl } from "../../persons/infrastructure/persons.repository.impl";
+import { PatientsPostgresDatasourceImpl } from "../../patients/infrastructure/patients.datasource.impl";
+import { PatientRepositoryImpl } from "../../patients/infrastructure/patients.repository.impl";
+import { DoctorsPostgresDatasourceImpl } from "../../doctors/infrastructure/doctors.datasource.impl";
+import { DoctorRepositoryImpl } from "../../doctors/infrastructure/doctors.repository.impl";
+import { RolPermissionsPostgresDatasourceImpl } from "../../permissions/infrastructure/rol-permissions.datasource.impl";
+import { RolPermissionsRepositoryImpl } from "../../permissions/infrastructure/rol-permissions.repository.impl";
 import {
   CreateUserUseCase,
   DeleteUserUseCase,
   GetUserByIdUseCase,
+  GetUsersUseCase,
+  GetUserProfileUseCase,
   UpdateUserUseCase,
 } from "../domain/use-cases";
 import {
@@ -22,8 +30,22 @@ const datasource = new UserPostgresDatasourceImpl();
 const repository = new UserRepositoryImpl(datasource);
 const personsDatasource = new PersonsPostgresDatasourceImpl();
 const personRepository = new PersonRepositoryImpl(personsDatasource);
+const patientsDatasource = new PatientsPostgresDatasourceImpl();
+const patientRepository = new PatientRepositoryImpl(patientsDatasource);
+const doctorsDatasource = new DoctorsPostgresDatasourceImpl();
+const doctorRepository = new DoctorRepositoryImpl(doctorsDatasource);
+const permissionsDatasource = new RolPermissionsPostgresDatasourceImpl();
+const permissionsRepository = new RolPermissionsRepositoryImpl(permissionsDatasource);
 const createUserUseCase = new CreateUserUseCase(repository, personRepository);
 const getUserByIdUseCase = new GetUserByIdUseCase(repository);
+const getUsersUseCase = new GetUsersUseCase(repository);
+const getUserProfileUseCase = new GetUserProfileUseCase(
+  repository,
+  personRepository,
+  patientRepository,
+  doctorRepository,
+  permissionsRepository,
+);
 const updateUserUseCase = new UpdateUserUseCase(repository);
 const deleteUserUseCase = new DeleteUserUseCase(repository);
 const emailSender = EMAIL_SEND_ENABLED ? new MailerSendEmailSender() : new ConsoleEmailSender();
@@ -110,6 +132,16 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const users = await getUsersUseCase.execute();
+    return res.status(200).json(users.map(toSafeUser));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getMe = async (req: Request, res: Response) => {
   try {
     const user = (req as Request & { user?: { usr_idt_id?: number } }).user;
@@ -118,11 +150,17 @@ export const getMe = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const found = await getUserByIdUseCase.execute(id);
-    if (!found) {
+    const profile = await getUserProfileUseCase.execute(id);
+    if (!profile) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json(toSafeUser(found));
+    return res.status(200).json({
+      user: toSafeUser(profile.user),
+      person_data: profile.person,
+      patient_data: profile.patient,
+      doctor_data: profile.doctor,
+      permissions: profile.permissions,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
