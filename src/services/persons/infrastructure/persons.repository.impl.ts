@@ -5,6 +5,10 @@ import type { PersonDatasource } from "../domain/person.datasource";
 export class PersonRepositoryImpl implements PersonRepository {
   constructor(private readonly datasource: PersonDatasource) {}
 
+  getAll(): Promise<PersonEntity[]> {
+    return this.datasource.getAll();
+  }
+
   getById(id: number): Promise<PersonEntity | null> {
     return this.datasource.getById(id);
   }
@@ -19,5 +23,13 @@ export class PersonRepositoryImpl implements PersonRepository {
 
   create(data: CreatePersonInput): Promise<PersonEntity> {
     return this.datasource.create(data);
+  }
+
+  update(id: number, data: Partial<PersonEntity>): Promise<PersonEntity | null> {
+    return this.datasource.update(id, data);
+  }
+
+  delete(id: number): Promise<void> {
+    return this.datasource.delete(id);
   }
 }

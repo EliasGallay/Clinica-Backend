@@ -1,4 +1,7 @@
-import type { RolPermissionsDatasource } from "../domain/rol-permissions.datasource";
+import type {
+  RolPermissionAccess,
+  RolPermissionsDatasource,
+} from "../domain/rol-permissions.datasource";
 import type { GetRolPermissionsQueryDto } from "../domain/dtos";
 import type { RolPermissionEntity } from "../domain/rol-permission.entity";
 import { RolesModel, RolPermissionsModel } from "../../../infrastructure/db";
@@ -41,6 +44,52 @@ export class RolPermissionsPostgresDatasourceImpl implements RolPermissionsDatas
       page,
       limit,
     };
+  }
+
+  async getByRoleNames(roleNames: string[]): Promise<RolPermissionAccess[]> {
+    const uniqueRoleNames = [...new Set(roleNames)].filter((name) => name);
+    if (!uniqueRoleNames.length) return [];
+
+    const roles = (await RolesModel.findAll({
+      where: { rol_name: uniqueRoleNames },
+      attributes: ["id", "rol_name"],
+    })) as unknown as Array<{ id: string; rol_name: string }>;
+    const roleIds = roles.map((role) => role.id);
+    if (!roleIds.length) return [];
+
+    const permissions = (await RolPermissionsModel.findAll({
+      where: { rol_id: roleIds },
+      attributes: [
+        "rpe_permission_txt_name",
+        "rpe_permission_txt_description",
+        "rpe_bol_can_read",
+        "rpe_bol_can_write",
+      ],
+    })) as RolPermissionsModelInstance[];
+
+    const map = new Map<string, RolPermissionAccess>();
+    for (const permission of permissions) {
+      const key = permission.rpe_permission_txt_name;
+      const existing = map.get(key);
+      if (!existing) {
+        map.set(key, {
+          rpe_permission_txt_name: permission.rpe_permission_txt_name,
+          rpe_permission_txt_description: permission.rpe_permission_txt_description,
+          rpe_bol_can_read: permission.rpe_bol_can_read,
+          rpe_bol_can_write: permission.rpe_bol_can_write,
+        });
+        continue;
+      }
+      map.set(key, {
+        ...existing,
+        rpe_bol_can_read: existing.rpe_bol_can_read || permission.rpe_bol_can_read,
+        rpe_bol_can_write: existing.rpe_bol_can_write || permission.rpe_bol_can_write,
+      });
+    }
+
+    return Array.from(map.values()).sort((a, b) =>
+      a.rpe_permission_txt_name.localeCompare(b.rpe_permission_txt_name),
+    );
   }
 
   async create(permission: RolPermissionEntity): Promise<RolPermissionEntity> {

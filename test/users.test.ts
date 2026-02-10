@@ -2,7 +2,14 @@ import request from "supertest";
 import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import type { Transaction } from "sequelize";
 import { app } from "../src/app";
-import { PersonsModel, RolesModel, UsersModel, sequelize } from "../src/infrastructure/db";
+import {
+  DoctorsModel,
+  PatientsModel,
+  PersonsModel,
+  RolesModel,
+  UsersModel,
+  sequelize,
+} from "../src/infrastructure/db";
 import type { UsersModelInstance } from "../src/services/users/infrastructure/data/users.types";
 import type { PersonsModelInstance } from "../src/services/persons/infrastructure/data/persons.types";
 import { setupPermissionsMock, teardownPermissionsMock } from "./permissions.mock";
@@ -59,6 +66,23 @@ const baseUserModel = (id = 10): UsersModelInstance =>
     roles: [{ rol_name: "admin" }],
   }) as unknown as UsersModelInstance & { roles: Array<{ rol_name: string }> };
 
+const basePersonModel = (): PersonsModelInstance =>
+  ({
+    per_id: 1,
+    per_txt_first_name: "Juan",
+    per_txt_last_name: "Perez",
+    per_txt_dni: "12345678",
+    per_dat_birthdate: new Date("1990-01-01"),
+    per_int_gender: 1,
+    per_txt_email: "juan.perez@correo.com",
+    per_txt_phone: "3511234567",
+    per_txt_address: "Calle Falsa 1234",
+    per_sta_state: 1,
+    per_dat_created_at: new Date("2026-02-02T03:00:00.000Z"),
+    per_dat_updated_at: new Date("2026-02-02T03:00:00.000Z"),
+    per_dat_deleted_at: null,
+  }) as PersonsModelInstance;
+
 beforeEach(() => {
   setupPermissionsMock();
 });
@@ -91,16 +115,35 @@ describe("GET /users/:id", () => {
 describe("GET /users/me", () => {
   it("returns current user for receptionist", async () => {
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(2));
+    vi.spyOn(PersonsModel, "findByPk").mockResolvedValue(basePersonModel());
+    vi.spyOn(PatientsModel, "findOne").mockResolvedValue(null);
+    vi.spyOn(DoctorsModel, "findOne").mockResolvedValue(null);
 
     const res = await request(app).get("/users/me").set("Authorization", "Bearer receptionist");
 
     expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("person_data");
+    expect(res.body).toHaveProperty("patient_data");
+    expect(res.body).toHaveProperty("doctor_data");
+    expect(res.body).toHaveProperty("permissions");
   });
 
   it("returns 401 when no auth header", async () => {
     const res = await request(app).get("/users/me");
 
     expect(res.status).toBe(401);
+  });
+});
+describe("GET /users/all", () => {
+  it("returns all users for admin", async () => {
+    vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(1));
+    vi.spyOn(UsersModel, "findAll").mockResolvedValue([baseUserModel(1), baseUserModel(2)]);
+
+    const res = await request(app).get("/users/all").set("Authorization", "Bearer admin");
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBe(2);
   });
 });
 describe("PUT /users/:id", () => {

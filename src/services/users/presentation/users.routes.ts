@@ -1,5 +1,12 @@
 import { Router } from "express";
-import { createUser, deleteUser, getMe, getUserById, updateUser } from "./users.controllers";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getMe,
+  getUserById,
+  updateUser,
+} from "./users.controllers";
 import { validateBody } from "./users.middlewares";
 import { createUserDtoSchema, updateUserDtoSchema } from "../domain/dtos";
 import {
@@ -19,8 +26,9 @@ usersRouter.post(
   validateBody(createUserDtoSchema),
   createUser,
 );
-usersRouter.get("/me", authRequired, requirePermission(Permissions.USERS, "read"), getMe);
-usersRouter.get("/:id", authRequired, requirePermission(Permissions.USERS, "read"), getUserById);
+  usersRouter.get("/me", authRequired, requirePermission(Permissions.USERS, "read"), getMe);
+  usersRouter.get("/all", authRequired, requirePermission(Permissions.USERS, "read"), getAllUsers);
+  usersRouter.get("/:id", authRequired, requirePermission(Permissions.USERS, "read"), getUserById);
 usersRouter.put(
   "/:id",
   authRequired,

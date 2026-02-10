@@ -1,5 +1,6 @@
 import type { RolPermissionEntity } from "../domain/rol-permission.entity";
 import type { RolPermissionsRepository } from "../domain/rol-permissions.repository";
+import type { RolPermissionAccess } from "../domain/rol-permissions.datasource";
 import type { RolPermissionsDatasource } from "../domain/rol-permissions.datasource";
 import type { GetRolPermissionsQueryDto } from "../domain/dtos";
 import type { RolPermissionPage } from "../domain/rol-permissions.datasource";
@@ -13,6 +14,10 @@ export class RolPermissionsRepositoryImpl implements RolPermissionsRepository {
 
   getAll(query: GetRolPermissionsQueryDto): Promise<RolPermissionPage> {
     return this.datasource.getAll(query);
+  }
+
+  getByRoleNames(roleNames: string[]): Promise<RolPermissionAccess[]> {
+    return this.datasource.getByRoleNames(roleNames);
   }
 
   create(permission: RolPermissionEntity): Promise<RolPermissionEntity> {

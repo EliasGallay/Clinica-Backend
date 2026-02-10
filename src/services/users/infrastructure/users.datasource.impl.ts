@@ -50,6 +50,21 @@ export class UserPostgresDatasourceImpl implements UserDatasource {
     return model ? toUserEntity(model, this.getRoleNames(model)) : null;
   }
 
+  async getAll(): Promise<UserEntity[]> {
+    const models = (await UsersModel.findAll({
+      include: [
+        {
+          model: this.rolesModel,
+          as: "roles",
+          attributes: ["rol_name"],
+          through: { attributes: [] },
+        },
+      ],
+      order: [["usr_idt_id", "ASC"]],
+    })) as UsersModelInstance[];
+    return models.map((model) => toUserEntity(model, this.getRoleNames(model)));
+  }
+
   async getByEmail(email: string): Promise<UserEntity | null> {
     const model = (await UsersModel.findOne({
       where: { usr_txt_email: email },

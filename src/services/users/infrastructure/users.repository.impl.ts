@@ -10,6 +10,10 @@ export class UserRepositoryImpl implements UserRepository {
     return this.datasource.getById(id);
   }
 
+  getAll(): Promise<UserEntity[]> {
+    return this.datasource.getAll();
+  }
+
   getByEmail(email: string): Promise<UserEntity | null> {
     return this.datasource.getByEmail(email);
   }
