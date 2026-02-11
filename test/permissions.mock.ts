@@ -3,7 +3,15 @@ import { vi } from "vitest";
 import { RolesModel, RolPermissionsModel } from "../src/infrastructure/db";
 import { clearPermissionsCache } from "../src/services/auth/presentation/auth.middlewares";
 
-const permissionItems = ["users", "persons", "patients", "doctors", "roles.permissions"];
+const permissionItems = [
+  "users",
+  "persons",
+  "patients",
+  "doctors",
+  "modules",
+  "submodules",
+  "roles.permissions",
+];
 
 export const setupPermissionsMock = () => {
   const rolesSpy = vi.spyOn(RolesModel, "findAll").mockImplementation((options) => {
