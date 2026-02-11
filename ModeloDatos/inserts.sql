@@ -77,6 +77,8 @@ CROSS JOIN (
     ('persons', 'Permite gestionar personas.'),
     ('patients', 'Permite gestionar pacientes.'),
     ('doctors', 'Permite gestionar doctores.'),
+    ('modules', 'Permite gestionar módulos del sistema.'),
+    ('submodules', 'Permite gestionar submódulos del sistema.'),
     ('roles.permissions', 'Permite gestionar permisos de roles.')
 ) AS p(perm, description)
 WHERE r.rol_name = 'admin'
@@ -97,6 +99,8 @@ CROSS JOIN (
     ('persons', 'Permite gestionar personas.'),
     ('patients', 'Permite gestionar pacientes.'),
     ('doctors', 'Permite gestionar doctores.'),
+    ('modules', 'Permite gestionar módulos del sistema.'),
+    ('submodules', 'Permite gestionar submódulos del sistema.'),
     ('roles.permissions', 'Permite gestionar permisos de roles.')
 ) AS p(perm, description)
 WHERE r.rol_name = 'recepcionista'

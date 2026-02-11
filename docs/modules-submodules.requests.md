@@ -1,5 +1,12 @@
 # Modules/Submodules Requests
 
+## Requisitos
+
+- Header `Authorization: Bearer <token>`
+- Permisos `modules` read/write para rutas de módulos
+- Permisos `submodules` read/write para rutas de submódulos
+- `GET /submodules` requiere `mod_id` en query string
+
 ## Modules
 
 ```bash
@@ -81,3 +88,11 @@ curl -X PUT http://localhost:3000/submodules/10 \
 curl -X DELETE http://localhost:3000/submodules/10 \
   -H "Authorization: Bearer <token>"
 ```
+
+## Errores comunes
+
+- `400` datos inválidos (Zod) o ids inválidos
+- `401` no autenticado
+- `403` sin permisos
+- `404` módulo o submódulo inexistente
+- `409` key duplicada (`mod_txt_key` o `sub_txt_key`)
