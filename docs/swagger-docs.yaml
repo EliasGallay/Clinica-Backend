@@ -19,6 +19,10 @@ tags:
     description: Patients
   - name: RolePermissions
     description: Role permissions
+  - name: Modules
+    description: Modules navigation catalog
+  - name: Submodules
+    description: Submodules navigation catalog
 components:
   securitySchemes:
     bearerAuth:
@@ -543,6 +547,231 @@ components:
           type: integer
         limit:
           type: integer
+    ModuleCreateRequest:
+      type: object
+      required:
+        - mod_txt_key
+        - mod_txt_name
+        - mod_int_order
+        - mod_sta_state
+        - mod_path_to
+      properties:
+        mod_txt_key:
+          type: string
+          minLength: 1
+          maxLength: 60
+        mod_txt_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        mod_int_order:
+          type: integer
+          minimum: 0
+        mod_sta_state:
+          type: integer
+        mod_path_to:
+          type: string
+          minLength: 1
+          maxLength: 60
+      example:
+        mod_txt_key: "patients"
+        mod_txt_name: "Pacientes"
+        mod_int_order: 1
+        mod_sta_state: 1
+        mod_path_to: "/patients"
+    ModuleUpdateRequest:
+      type: object
+      properties:
+        mod_txt_key:
+          type: string
+          minLength: 1
+          maxLength: 60
+        mod_txt_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        mod_int_order:
+          type: integer
+          minimum: 0
+        mod_sta_state:
+          type: integer
+        mod_path_to:
+          type: string
+          minLength: 1
+          maxLength: 60
+      example:
+        mod_txt_name: "Agenda"
+        mod_int_order: 2
+    SubmoduleCreateRequest:
+      type: object
+      required:
+        - mod_id
+        - sub_txt_key
+        - sub_txt_name
+        - sub_int_order
+        - sub_sta_state
+        - sub_path_to
+      properties:
+        mod_id:
+          type: integer
+          minimum: 1
+        sub_txt_key:
+          type: string
+          minLength: 1
+          maxLength: 60
+        sub_txt_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sub_int_order:
+          type: integer
+          minimum: 0
+        sub_sta_state:
+          type: integer
+        sub_path_to:
+          type: string
+          minLength: 1
+          maxLength: 60
+        sub_icon:
+          type: string
+          maxLength: 60
+          nullable: true
+      example:
+        mod_id: 1
+        sub_txt_key: "patients_list"
+        sub_txt_name: "Listado de pacientes"
+        sub_int_order: 1
+        sub_sta_state: 1
+        sub_path_to: "/patients"
+        sub_icon: "users"
+    SubmoduleUpdateRequest:
+      type: object
+      properties:
+        mod_id:
+          type: integer
+          minimum: 1
+        sub_txt_key:
+          type: string
+          minLength: 1
+          maxLength: 60
+        sub_txt_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sub_int_order:
+          type: integer
+          minimum: 0
+        sub_sta_state:
+          type: integer
+        sub_path_to:
+          type: string
+          minLength: 1
+          maxLength: 60
+        sub_icon:
+          type: string
+          maxLength: 60
+          nullable: true
+      example:
+        sub_txt_name: "Listado"
+        sub_int_order: 2
+    SubmoduleNavItem:
+      type: object
+      properties:
+        sub_id:
+          type: integer
+        mod_id:
+          type: integer
+        sub_txt_key:
+          type: string
+        sub_txt_name:
+          type: string
+        sub_path_to:
+          type: string
+        sub_int_order:
+          type: integer
+        sub_sta_state:
+          type: integer
+        sub_dat_created_at:
+          type: string
+          format: date-time
+        sub_dat_updated_at:
+          type: string
+          format: date-time
+        sub_dat_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        sub_icon:
+          type: string
+          nullable: true
+    ModuleNavItem:
+      type: object
+      properties:
+        mod_id:
+          type: integer
+        mod_txt_key:
+          type: string
+        mod_txt_name:
+          type: string
+        mod_path_to:
+          type: string
+        mod_int_order:
+          type: integer
+        mod_sta_state:
+          type: integer
+        mod_dat_created_at:
+          type: string
+          format: date-time
+        mod_dat_updated_at:
+          type: string
+          format: date-time
+        mod_dat_deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        mod_submodules:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubmoduleNavItem"
+    ModulesListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModuleNavItem"
+    ModuleResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/ModuleNavItem"
+    SubmodulesListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubmoduleNavItem"
+    SubmoduleResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/SubmoduleNavItem"
+    EmptyDataResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          nullable: true
 paths:
   /health:
     get:
@@ -1511,6 +1740,533 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /modules:
+    get:
+      tags:
+        - Modules
+      summary: List modules with submodules
+      description: Requires permission `modules` read.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModulesListResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Modules
+      summary: Create module
+      description: Requires permission `modules` write.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModuleCreateRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Module key already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /modules/{modId}:
+    get:
+      tags:
+        - Modules
+      summary: Get module by id
+      description: Requires permission `modules` read.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: modId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleResponse"
+        "400":
+          description: Invalid modId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Modules
+      summary: Update module
+      description: Requires permission `modules` write.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: modId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModuleUpdateRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleResponse"
+        "400":
+          description: Invalid modId or validation error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Module key already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Modules
+      summary: Delete module (soft delete)
+      description: Requires permission `modules` write.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: modId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptyDataResponse"
+        "400":
+          description: Invalid modId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /submodules:
+    get:
+      tags:
+        - Submodules
+      summary: List submodules by module
+      description: Requires permission `submodules` read.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: mod_id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmodulesListResponse"
+        "400":
+          description: Invalid mod_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Submodules
+      summary: Create submodule
+      description: Requires permission `submodules` write.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmoduleCreateRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmoduleResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Submodule key already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /submodules/{subId}:
+    get:
+      tags:
+        - Submodules
+      summary: Get submodule by id
+      description: Requires permission `submodules` read.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: subId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmoduleResponse"
+        "400":
+          description: Invalid subId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Submodule not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Submodules
+      summary: Update submodule
+      description: Requires permission `submodules` write.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: subId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmoduleUpdateRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmoduleResponse"
+        "400":
+          description: Invalid subId or validation error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Submodule not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Submodule key already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Submodules
+      summary: Delete submodule (soft delete)
+      description: Requires permission `submodules` write.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: subId
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptyDataResponse"
+        "400":
+          description: Invalid subId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Submodule not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:

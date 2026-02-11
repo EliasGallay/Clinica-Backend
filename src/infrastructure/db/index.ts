@@ -8,6 +8,8 @@ import initPersonsModel from "../../services/persons/infrastructure/data/persons
 import initPatientsModel from "../../services/patients/infrastructure/data/patients.model.postgres";
 import initDoctorsModel from "../../services/doctors/infrastructure/data/doctors.model.postgres";
 import initRolPermissionModel from "../../services/permissions/infrastructure/data/rol-permission.model.postgres";
+import initModulesTableModel from "../../services/modulesTable/infrastructure/data/modulesTable.model.postgres";
+import initSubmodulesModel from "../../services/modulesTable/infrastructure/data/submodules.model.postgres";
 
 export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
@@ -30,6 +32,8 @@ const modelDefiners = [
   initPatientsModel,
   initDoctorsModel,
   initRolPermissionModel,
+  initModulesTableModel,
+  initSubmodulesModel,
 ];
 
 for (const defineModel of modelDefiners) {
@@ -55,3 +59,5 @@ export const PersonsModel = sequelize.models.persons;
 export const PatientsModel = sequelize.models.patients;
 export const DoctorsModel = sequelize.models.doctors;
 export const RolPermissionsModel = sequelize.models.rol_permission;
+export const ModulesTableModel = sequelize.models.modules;
+export const SubmodulesModel = sequelize.models.submodules;
