@@ -28,6 +28,8 @@ export const setupPermissionsMock = () => {
     const roles = (names.length ? names : ["admin"]).map((name, index) => ({
       id: `role-${index + 1}`,
       rol_name: name,
+      rol_description: `Descripcion de ${name}`,
+      rol_weight: index + 1,
     }));
     return Promise.resolve(roles as unknown as Awaited<ReturnType<typeof RolesModel.findAll>>);
   });

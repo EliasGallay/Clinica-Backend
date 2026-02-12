@@ -6,7 +6,10 @@ import type { PersonsCreationAttributes, PersonsModelInstance } from "./data/per
 
 export class PersonsPostgresDatasourceImpl implements PersonDatasource {
   async getAll(): Promise<PersonEntity[]> {
-    const models = (await PersonsModel.findAll()) as PersonsModelInstance[];
+    const models = (await PersonsModel.findAll({
+      where: { per_dat_deleted_at: null },
+      order: [["per_id", "DESC"]],
+    })) as PersonsModelInstance[];
     return models.map((model) => toPersonEntity(model));
   }
 
@@ -39,7 +42,7 @@ export class PersonsPostgresDatasourceImpl implements PersonDatasource {
   async update(id: number, data: Partial<PersonEntity>): Promise<PersonEntity | null> {
     const [updated] = await PersonsModel.update(
       data as Partial<PersonsCreationAttributes>,
-      { where: { per_id: id } },
+      { where: { per_id: id, per_dat_deleted_at: null } },
     );
     if (!updated) return null;
     const reloaded = (await PersonsModel.findByPk(id)) as PersonsModelInstance | null;
@@ -47,6 +50,9 @@ export class PersonsPostgresDatasourceImpl implements PersonDatasource {
   }
 
   async delete(id: number): Promise<void> {
-    await PersonsModel.update({ per_dat_deleted_at: new Date() }, { where: { per_id: id } });
+    await PersonsModel.update(
+      { per_dat_deleted_at: new Date() },
+      { where: { per_id: id, per_dat_deleted_at: null } },
+    );
   }
 }
