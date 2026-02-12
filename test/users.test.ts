@@ -95,10 +95,12 @@ afterEach(() => {
 describe("GET /users/:id", () => {
   it("allows admin to access a profile", async () => {
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(10));
+    vi.spyOn(PersonsModel, "findByPk").mockResolvedValue(basePersonModel());
 
     const res = await request(app).get("/users/10").set("Authorization", "Bearer admin");
 
     expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("person_data");
   });
 
   it("returns 404 when user does not exist", async () => {
@@ -138,12 +140,14 @@ describe("GET /users/all", () => {
   it("returns all users for admin", async () => {
     vi.spyOn(UsersModel, "findByPk").mockResolvedValue(baseUserModel(1));
     vi.spyOn(UsersModel, "findAll").mockResolvedValue([baseUserModel(1), baseUserModel(2)]);
+    vi.spyOn(PersonsModel, "findByPk").mockResolvedValue(basePersonModel());
 
     const res = await request(app).get("/users/all").set("Authorization", "Bearer admin");
 
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBe(2);
+    expect(res.body[0]).toHaveProperty("person_data");
   });
 });
 describe("PUT /users/:id", () => {

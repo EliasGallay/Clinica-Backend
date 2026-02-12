@@ -9,6 +9,7 @@ import { personsRouter } from "./services/persons/presentation";
 import { doctorsRouter } from "./services/doctors/presentation";
 import { patientsRouter } from "./services/patients/presentation";
 import { rolesPermissionsRouter } from "./services/permissions/presentation";
+import { rolesRouter } from "./services/roles/presentation";
 import { modulesRouter, submodulesRouter } from "./services/modulesTable/presentation";
 
 const app = express();
@@ -26,6 +27,7 @@ app.use("/persons", personsRouter);
 app.use("/doctors", doctorsRouter);
 app.use("/patients", patientsRouter);
 app.use("/roles", rolesPermissionsRouter);
+app.use("/roles", rolesRouter);
 app.use("/modules", modulesRouter);
 app.use("/submodules", submodulesRouter);
 

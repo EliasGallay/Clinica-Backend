@@ -6,6 +6,9 @@ export class UpdatePersonUseCase {
   constructor(private readonly repository: PersonRepository) {}
 
   async execute(id: number, data: UpdatePersonDto): Promise<PersonEntity | null> {
+    const existing = await this.repository.getById(id);
+    if (!existing) return null;
+
     if (data.per_txt_dni !== undefined && data.per_txt_dni !== null) {
       const existingByDni = await this.repository.getByDni(data.per_txt_dni);
       if (existingByDni && existingByDni.per_id !== id) {

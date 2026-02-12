@@ -38,7 +38,7 @@ const permissionsDatasource = new RolPermissionsPostgresDatasourceImpl();
 const permissionsRepository = new RolPermissionsRepositoryImpl(permissionsDatasource);
 const createUserUseCase = new CreateUserUseCase(repository, personRepository);
 const getUserByIdUseCase = new GetUserByIdUseCase(repository);
-const getUsersUseCase = new GetUsersUseCase(repository);
+const getUsersUseCase = new GetUsersUseCase(repository, personRepository);
 const getUserProfileUseCase = new GetUserProfileUseCase(
   repository,
   personRepository,
@@ -125,7 +125,8 @@ export const getUserById = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json(toSafeUser(user));
+    const person = user.per_id ? await personRepository.getById(user.per_id) : null;
+    return res.status(200).json({ ...toSafeUser(user), person_data: person });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
@@ -135,7 +136,11 @@ export const getUserById = async (req: Request, res: Response) => {
 export const getAllUsers = async (_req: Request, res: Response) => {
   try {
     const users = await getUsersUseCase.execute();
-    return res.status(200).json(users.map(toSafeUser));
+    const payload = users.map((item) => ({
+      ...toSafeUser(item.user),
+      person_data: item.person_data,
+    }));
+    return res.status(200).json(payload);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });
